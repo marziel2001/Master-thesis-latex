@@ -1,25 +1,32 @@
 \documentclass{article}
 \usepackage[T1]{fontenc} % for polish characters
 
-\title{Sections and Chapters}
+\title{Praca magisterska - Porównanie i analiza modeli Speech To Text}
 \author{Marcel Zieliński}
 \date{ }
 
 \begin{document}
 
 \maketitle
+\break
 
 \tableofcontents
-
-\section{Wstęp}
-
-This is the first section.
+\break
 
 
 \addcontentsline{toc}{section}{Unnumbered Section}
 \section*{Unnumbered Section}
-dfsfs
+sekcja
 
 \section{Second Section}
+% Spis treści
+\tableofcontents
+\newpage
+
+% Rozdziały z osobnych plików
+\input{wstep.tex}
+\input{metodyka.tex}
+\input{wyniki.tex}
+\input{podsumowanie.tex}
 
 \end{document}
