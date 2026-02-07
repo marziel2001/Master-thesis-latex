@@ -23,10 +23,83 @@ sekcja
 \tableofcontents
 \newpage
 
+Cytat przykładowy \cite{zielonka2023survey}.
+
 % Rozdziały z osobnych plików
 \input{wstep.tex}
 \input{metodyka.tex}
 \input{wyniki.tex}
 \input{podsumowanie.tex}
 
+% Bibliography
+\bibliographystyle{plain}
+\bibliography{bibliography}
+
 \end{document}
+
+% SPIS TREŚCI
+% Wstęp
+%     Uzasadnienie wyboru tematu
+%     Cel i zakres pracy
+%     Metodyka badań i narzędzia
+%     Struktura pracy
+
+% Rozdział 1. Teoretyczne podstawy technologii Speech-to-Text
+% 1.1. Wprowadzenie do technologii rozpoznawania mowy
+% 1.2. Ewolucja systemów ASR (Automatic Speech Recognition)
+% 1.3. Kluczowe pojęcia: fonemy, modele akustyczne, modele językowe
+% 1.4. Metody uczenia modeli STT (HMM, DNN, Transformer, Whisper)
+% 1.5. Standardy i protokoły wykorzystywane w systemach STT
+% 1.6. Wyzwania technologiczne: szumy, akcenty, kontekst, modele on-device
+% Rozdział 2. Przegląd dostępnych narzędzi i usług Speech-to-Text
+% 2.1. Kryteria porównawcze narzędzi STT
+% 2.2. Google Speech-to-Text API
+% 2.3. Microsoft Azure Speech Service
+% 2.4. Amazon Transcribe
+% 2.5. OpenAI Whisper (on-device i w chmurze)
+% 2.6. Web Speech API (przeglądarkowe)
+% 2.7. Porównanie dostępnych narzędzi:
+%    2.7.1. Dokładność transkrypcji
+%    2.7.2. Opóźnienia i czas przetwarzania
+%    2.7.3. Wymagania sprzętowe
+%    2.7.4. Koszty użytkowania
+%    2.7.5. Możliwość pracy offline
+%    2.7.6. Dostępność języka polskiego
+% Rozdział 3. Technologia React jako platforma implementacji
+% 3.1. Architektura React – komponenty, hooki, state management
+% 3.2. Integracja z API i usługami zewnętrznymi
+% 3.3. Komunikacja w czasie rzeczywistym (WebSocket, Streaming, REST)
+% 3.4. Obsługa audio w przeglądarce (MediaDevices, AudioContext, MediaRecorder)
+% 3.5. Wymagania wydajnościowe po stronie frontendu
+% Rozdział 4. Projekt i implementacja aplikacji React wykorzystującej Speech-to-Text
+% 4.1. Założenia funkcjonalne aplikacji
+% 4.2. Projekt architektury systemu
+%    4.2.1. Ogólny schemat przepływu danych
+%    4.2.2. Integracja z wybranymi usługami STT
+%    4.2.3. Warstwa frontendu (React)
+%    4.2.4. Ewentualna warstwa backendowa (Node.js / Express)
+% 4.3. Implementacja modułu nagrywania dźwięku
+% 4.4. Implementacja komunikacji z API STT
+% 4.5. Wizualizacja i edycja transkrypcji
+% 4.6. Obsługa błędów i fallbacki (np. Whisper offline)
+% 4.7. Testy funkcjonalne i wydajnościowe
+% 4.8. Wyzwania implementacyjne i sposoby ich rozwiązania
+% Rozdział 5. Studium porównawcze skuteczności wybranych narzędzi STT
+% 5.1. Projekt eksperymentu
+%    5.1.1. Przygotowanie zestawu nagrań
+%    5.1.2. Warunki badania i pomiarów
+% 5.2. Metryki oceny jakości transkrypcji (WER, CER, RTT)
+% 5.3. Wyniki testów porównawczych
+% 5.4. Analiza statystyczna wyników
+% 5.5. Wnioski z badań
+% Rozdział 6. Ocena przydatności technologii STT w aplikacjach webowych
+% 6.1. Zastosowania praktyczne
+% 6.2. Skalowalność i efektywność kosztowa
+% 6.3. Bezpieczeństwo i prywatność danych audio
+% 6.4. Rekomendacje implementacyjne
+% 6.5. Ograniczenia i możliwe kierunki rozwoju
+% Zakończenie
+
+%     Podsumowanie pracy
+%     Najważniejsze osiągnięcia
+%     Kierunki dalszych badań
