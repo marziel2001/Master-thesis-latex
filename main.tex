@@ -1,9 +1,9 @@
 \documentclass{article}
 \usepackage[T1]{fontenc} % for polish characters
 
-\title{Praca magisterska - Porównanie i analiza modeli Speech To Text}
+\title{Praca magisterska - Porównanie i analiza modeli Speech To Text v1}
 \author{Marcel Zieliński}
-\date{ }
+\date{}
 
 \begin{document}
 
@@ -13,37 +13,47 @@
 \tableofcontents
 \break
 
-
-\addcontentsline{toc}{section}{Unnumbered Section}
+\addcontentsline{toc}{section}{Unnumbered Section} % Dodanie sekcji do spisu treści
 \section*{Unnumbered Section}
 sekcja
 
-\section{Second Section}
-% Spis treści
-\tableofcontents
 \newpage
 
 Cytat przykładowy \cite{zielonka2023survey}.
 
 % Rozdziały z osobnych plików
-\input{wstep.tex}
-\input{metodyka.tex}
-\input{wyniki.tex}
-\input{podsumowanie.tex}
+\input{rozdzial1.tex}
+\input{rozdzial2.tex}
+\input{rozdzial3.tex}
+\input{rozdzial4.tex}
+\input{zakonczenie.tex}
 
 % Bibliography
 \bibliographystyle{plain}
+
 \bibliography{bibliography}
 
 \end{document}
 
 % SPIS TREŚCI
+% Promotorka: WSTĘP (Motywacji → Przegląd źródeł → Metodologia → Metoda) [10-20 Stron]
+% Promotorka: WYBRANA METODA BADAWCZA (Innowacja) [10-15 stron]
+% Promotorka: IMPLEMENTACJA METODA I BADANIA (np.: symulacyjne/laboratoryjne) [30-40 stron]
+% Promotorka: POTENCJAŁ KOMERCJALIZACJI/RYNKOWY [5-10 stron]
+% Promotorka:
+%     ZAKOŃCZENIE [3-5 stron]
+%     BIBLIOGRAFIA (min. 30 pozycji)
+%     SPISY (tabele, rysunki, wykres)
+%     ZAŁĄCZNIKI
+
+
+
+
 % Wstęp
 %     Uzasadnienie wyboru tematu
 %     Cel i zakres pracy
 %     Metodyka badań i narzędzia
 %     Struktura pracy
-
 % Rozdział 1. Teoretyczne podstawy technologii Speech-to-Text
 % 1.1. Wprowadzenie do technologii rozpoznawania mowy
 % 1.2. Ewolucja systemów ASR (Automatic Speech Recognition)
@@ -99,7 +109,11 @@ Cytat przykładowy \cite{zielonka2023survey}.
 % 6.4. Rekomendacje implementacyjne
 % 6.5. Ograniczenia i możliwe kierunki rozwoju
 % Zakończenie
-
 %     Podsumowanie pracy
 %     Najważniejsze osiągnięcia
 %     Kierunki dalszych badań
+
+
+
+%  Marcel Notatki
+% Miscrosoft ma rozne rozwiazania speech to text: https://learn.microsoft.com/en-us/azure/ai-services/speech-service/speech-to-text
