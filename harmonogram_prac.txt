@@ -1,9 +1,15 @@
-do 24 maja - zaimplementowanie aplikacji
+do 25 maja - zaimplementowanie wszystkich potrzebnych funkcjonalności aplikacji
 - batch processing transkrypcji, opcja na żywo zostaje jedynie jako opcja lub zostanie wykonany test poza opracowaną aplikacją, gdyż tylko część usługodawców oferuje takie rozwiązanie
 - zapisywanie wyników do pliku
 - osobny moduł do wczytywania wykonanych transkrypcji i wyświetlania diffa, wraz z metrykami
 - rysowanie wykresów porównawczych
 
+do 27 maja - opracowanie metodyki i spisanie scenariuszy testowych, rozesłanie scenariuszy do chętnych respondentów
+
 do 4 czerwca - ukończenie pozykiwania nagrań, oraz przepuszczenie ich przez aplikację, zebranie wyników
 
 do 12 czerwca - sporządzenie raportu z wyników
+
+12.06 - 01.10 - pisanie wstępnej wersji pracy magisterskiej
+
+1.10 - data oddania pracy - wprowadzanie poprawek i ewentualnych rozszerzeń
