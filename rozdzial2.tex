@@ -1,7 +1,21 @@
 \section{Teoretyczne podstawy technologii Speech-to-Text}
 \subsection{Wprowadzenie do technologii rozpoznawania mowy}
+Technologia automatycznego rozpoznawania mowy (ASR – Automatic Speech Recognition), często określana również mianem Speech-to-Text (STT), polega na automatycznej konwersji sygnału mowy, zarejestrowanego w formie cyfrowego strumienia audio, na odpowiadający mu zapis tekstowy. Jest to obecnie jeden z kluczowych elementów rozwoju interakcji człowiek-komputer, umożliwiający maszynom dekodowanie i analizowanie ludzkiej mowy.
+% [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE]
+Motywacją do rozwoju systemów STT jest fakt, że mówienie stanowi dla ludzi najbardziej bezpośredni, naturalny i intuicyjny sposób komunikacji. Jak zauważa Mikołaj Pudo w swojej rozprawie doktorskiej \cite{pudo2024optimizing}, przez dziesięciolecia dominującym paradygmatem interfejsów użytkownika był tekst wprowadzany za pomocą klawiatury oraz urządzenia wskazujące, jednak rozwój technologii przetwarzania mowy otworzył drogę do upowszechnienia interfejsów głosowych (VUI – \textit{Voice User Interfaces}). W publikacji poświęconej systemom wspomagającym Chlewicki i in. \cite{chlewicki2024potencjal} podkreślają, że interfejsy te stanowią naturalną ewolucję metod interakcji, zastępując lub uzupełniając tradycyjne rozwiązania, co ma szczególne znaczenie w aplikacjach mobilnych oraz systemach asystenckich wspierających niezależność osób z niepełnosprawnościami.
+W architekturze nowoczesnych systemów, takich jak inteligentni asystenci, moduł rozpoznawania mowy pełni rolę pierwszego ogniwa w łańcuchu przetwarzania informacji. Zgodnie z modelem przedstawionym przez Pondel-Sycz i in. \cite{pondel2024e2e}, proces ten obejmuje zazwyczaj następujące etapy: \begin{itemize} \item \textbf{Akwizycja danych:} Rejestracja dźwięku przez mikrofon urządzenia. \item \textbf{Dekodowanie:} Przetworzenie sygnału przez model akustyczny i językowy w celu wygenerowania tzw. hipotezy tekstowej. \item \textbf{Analiza semantyczna:} Przekazanie tekstu do modułu rozumienia języka naturalnego (NLU), który interpretuje intencję użytkownika. \end{itemize}
+Mimo ogromnego postępu, precyzyjne rozpoznawanie mowy pozostaje złożonym wyzwaniem ze względu na znaczną heterogeniczność danych. Autorzy artykułu dotyczącego benchmarkingu usług STT \cite{ferraro2023benchmarking} wskazują, że do najważniejszych czynników wpływających na jakość transkrypcji należą warunki akustyczne (echo, pogłos, szum tła), zróżnicowanie mówców (rytm, ton, akcent) oraz specyfika danego języka, co w przypadku języka polskiego jest szczególnie widoczne ze względu na jego złożoną strukturę.
+
 \subsection{Ewolucja systemów ASR (Automatic Speech Recognition)}
+
+
 \subsection{Kluczowe pojęcia: fonemy, modele akustyczne, modele językowe}
+
+
 \subsection{Metody uczenia modeli STT (HMM, DNN, Transformer, Whisper)}
+
+
 \subsection{Standardy i protokoły wykorzystywane w systemach STT}
+
+
 \subsection{Wyzwania technologiczne: szumy, akcenty, kontekst, modele on-device}
