@@ -1,21 +1,110 @@
 \section{Teoretyczne podstawy technologii Speech-to-Text}
 \subsection{Wprowadzenie do technologii rozpoznawania mowy}
 Technologia automatycznego rozpoznawania mowy (ASR – Automatic Speech Recognition), często określana również mianem Speech-to-Text (STT), polega na automatycznej konwersji sygnału mowy, zarejestrowanego w formie cyfrowego strumienia audio, na odpowiadający mu zapis tekstowy. Jest to obecnie jeden z kluczowych elementów rozwoju interakcji człowiek-komputer, umożliwiający maszynom dekodowanie i analizowanie ludzkiej mowy.
-% [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE]
 Motywacją do rozwoju systemów STT jest fakt, że mówienie stanowi dla ludzi najbardziej bezpośredni, naturalny i intuicyjny sposób komunikacji. Jak zauważa Mikołaj Pudo w swojej rozprawie doktorskiej \cite{pudo2024optimizing}, przez dziesięciolecia dominującym paradygmatem interfejsów użytkownika był tekst wprowadzany za pomocą klawiatury oraz urządzenia wskazujące, jednak rozwój technologii przetwarzania mowy otworzył drogę do upowszechnienia interfejsów głosowych (VUI – \textit{Voice User Interfaces}). W publikacji poświęconej systemom wspomagającym Chlewicki i in. \cite{chlewicki2024potencjal} podkreślają, że interfejsy te stanowią naturalną ewolucję metod interakcji, zastępując lub uzupełniając tradycyjne rozwiązania, co ma szczególne znaczenie w aplikacjach mobilnych oraz systemach asystenckich wspierających niezależność osób z niepełnosprawnościami.
 W architekturze nowoczesnych systemów, takich jak inteligentni asystenci, moduł rozpoznawania mowy pełni rolę pierwszego ogniwa w łańcuchu przetwarzania informacji. Zgodnie z modelem przedstawionym przez Pondel-Sycz i in. \cite{pondel2024e2e}, proces ten obejmuje zazwyczaj następujące etapy: \begin{itemize} \item \textbf{Akwizycja danych:} Rejestracja dźwięku przez mikrofon urządzenia. \item \textbf{Dekodowanie:} Przetworzenie sygnału przez model akustyczny i językowy w celu wygenerowania tzw. hipotezy tekstowej. \item \textbf{Analiza semantyczna:} Przekazanie tekstu do modułu rozumienia języka naturalnego (NLU), który interpretuje intencję użytkownika. \end{itemize}
 Mimo ogromnego postępu, precyzyjne rozpoznawanie mowy pozostaje złożonym wyzwaniem ze względu na znaczną heterogeniczność danych. Autorzy artykułu dotyczącego benchmarkingu usług STT \cite{ferraro2023benchmarking} wskazują, że do najważniejszych czynników wpływających na jakość transkrypcji należą warunki akustyczne (echo, pogłos, szum tła), zróżnicowanie mówców (rytm, ton, akcent) oraz specyfika danego języka, co w przypadku języka polskiego jest szczególnie widoczne ze względu na jego złożoną strukturę.
+% [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE]
+
 
 \subsection{Ewolucja systemów ASR (Automatic Speech Recognition)}
+% W tej sekcji musisz
+% - nakreślić historyczny i technologiczny łuk rozwoju technologii rozpoznawania mowy.
+%     Co opisać:
+%         Klasyczny paradygmat hybrydowy/modułowy (HMM-GMM oraz HMM-DNN):
+% - Wyjaśnij, że dawne systemy składały się z trzech oddzielnie trenowanych komponentów
+% - modelu akustycznego AM
+% - leksykonu PM
+% - modelu językowego LM).
+
+% Opisz konieczność stosowania czasochłonnego procesu forced alignment (ręcznego wyrównywania nagrań do ramek czasowych) oraz ograniczenia tzw. Out-Of-Vocabulary (słów spoza słownika PM).
+%         Przejście do paradygmatu End-to-End (E2E): 
+% Wyjaśnij, jak zintegrowane sieci neuronowe zastąpiły podejście modułowe, umożliwiając bezpośrednie mapowanie sygnału audio na tekst. 
+
+% Wspomnij o wyeliminowaniu skomplikowanego podziału na fonemy na rzecz mapowania całych wypowiedzi lub sub-słów (np. za pomocą algorytmu BPE).
+%     Gdzie dokładnie czytać w Twoich źródłach:
+%         Artykuł Pondel-Sycz i in.: Przeczytaj uważnie sekcję II.A „Conventional ASR” oraz II.B „End-To-End ASR”. Znajdziesz tam doskonałe i zwięzłe porównanie obu tych światów.
+%         Rozprawa doktorska Mikołaja Pudo: Przeczytaj sekcję 2.1 „Custom Keyword Spotting” (strony 20–21). Pudo świetnie opisuje tam techniczną ewolucję systemów od modeli statystycznych Markowa (HMM-GMM) po nowoczesne architektury z mechanizmem uwag (attention) i CTC.
+
+
+Rozwój systemów automatycznego rozpoznawania mowy na przestrzeni ostatnich dekad można podzielić na dwie główne epoki technologiczne: klasyczną architekturę modułową (hybrydową) oraz nowoczesną architekturę zintegrowaną typu End-to-End (E2E) \cite{pondel2024e2e}. Zrozumienie różnic między tymi podejściami jest kluczowe dla oceny postępu wydajnościowego i dokładności współczesnych modeli transkrypcyjnych.
+\textbf{Podejście konwencjonalne (modułowe)} opierało się na paradygmacie podziału procesu rozpoznawania na niezależne od siebie, osobno trenowane komponenty:
+\begin{itemize} 
+    \item model akustyczny (AM – \textit{Acoustic Model})
+    \item słownik wymowy (PM – \textit{Pronunciation Model}) 
+    \item oraz model językowy (LM – \textit{Language Model}) \cite{pondel2024e2e}. 
+\end{itemize}
+    Standardem w modelowaniu akustycznym przez wiele lat były Ukryte Modele Markowa (HMM) połączone z modelami mieszanin rozkładów Gaussa (HMM-GMM) \cite{pudo2024optimizing}. W tej konfiguracji stany ukryte modelu HMM reprezentowały fonemy, a rozkłady GMM opisywały prawdopodobieństwo emisji cech akustycznych, najczęściej współczynników mel-cepstralnych częstotliwości (MFCC -- \textit{Mel-Frequency Cepstral Coefficients}), dla poszczególnych stanów \cite{pondel2024e2e}. W późniejszym okresie komponent GMM został zastąpiony przez głębokie sieci neuronowe, co dało początek wydajniejszym systemom hybrydowym HMM-DNN \cite{pudo2024optimizing}.
+%To sformułowanie brzmi bardzo skomplikowanie, ponieważ dotyczy absolutnego jądra matematycznego klasycznych systemów rozpoznawania mowy. Abyś mógł to łatwo zrozumieć i opisać w pracy własnymi słowami, rozbijmy to zdanie na czynniki pierwsze za pomocą prostego porównania.
+% Wyobraź sobie analogię: Gra na pianinie w ciemnym pokoju
+% Wyobraź sobie, że stoisz w całkowicie ciemnym pokoju. Ktoś obok gra na pianinie, a Ty próbujesz zapisać nuty, które słyszysz:
+
+%     Stany ukryte HMM (nuty/fonemy): Nie widzisz palców pianisty ani klawiszy, które naciska. Ta sekwencja ruchów i konkretnych klawiszy (czyli w mowie: fonemów, najmniejszych jednostek dźwiękowych) jest dla Ciebie ukryta (stąd Hidden Markov Model). HMM próbuje zgadnąć, jak te ukryte stany (fonemy) przechodzą jeden w drugi w czasie (np. że po fonemie „k” najczęściej następuje fonem „o”).
+%     Cechy akustyczne MFCC (brzmienie fali dźwiękowej): To, co fizycznie dociera do Twoich uszu, to drgania powietrza. W komputerze dźwięk dzielimy na mikrosekundy i wyciągamy z nich „cyfrowy odcisk palca” dźwięku – czyli współczynniki MFCC. To są Twoje fizyczne obserwacje, czyli to, co komputer rzeczywiście „słyszy” z mikrofonu.
+%     Rozkłady GMM (prawdopodobieństwo emisji): Tutaj pojawia się kluczowe pytanie: Skąd komputer ma wiedzieć, że ten konkretny szum i pisk (MFCC) to akurat fonem „o”, a nie „a”? Do tego służy GMM (Gaussian Mixture Model – model oparty na statystycznych krzywych Gaussa). GMM to taki matematyczny tłumacz, który mówi: „Jeśli pianista nacisnął klawisz C (stan ukryty HMM), to prawdopodobieństwo, że usłyszysz akurat taki pisk i częstotliwość (MFCC), wynosi 85%”.
+
+% Podsumowując prosto to jedno zdanie:
+
+%     HMM odpowiada za strukturę czasu i języka – pilnuje, żeby fonemy układały się w logiczne sekwencje (stany ukryte = fonemy).
+%     GMM odpowiada za dopasowanie fizycznego dźwięku do litery – wylicza prawdopodobieństwo, że dany kawałek nagrania (cechy MFCC) to rzeczywiście ten konkretny fonem (prawdopodobieństwo emisji).
+
+% Dzięki takiemu podziałowi ról klasyczny system potrafił zamienić surowy szum z mikrofonu na konkretne ciągi głosek.
+
+Klasyczna architektura modułowa niosła ze sobą jednak szereg istotnych ograniczeń: \begin{itemize} \item \textbf{Złożoność przygotowania danych:} Wymagała ona czasochłonnego i kosztownego procesu tzw. \textit{forced alignment}, czyli precyzyjnego wyrównywania nagrań dźwiękowych i przypisywania etykiet fonetycznych do bardzo krótkich (zwykle 10-30 ms) ramek sygnału \cite{pondel2024e2e}. \item \textbf{Propagacja błędów:} Każdy z modułów (AM, PM, LM) był optymalizowany pod kątem innych funkcji kosztu, co sprawiało, że błędy popełnione na etapie dekodowania akustycznego kumulowały się w kolejnych krokach, uniemożliwiając globalną optymalizację systemu \cite{pondel2024e2e}. \item \textbf{Problem słów spoza słownika (OOV -- \textit{Out-Of-Vocabulary}):} Tradycyjny leksykon wymowy ograniczał system wyłącznie do słów wcześniej zdefiniowanych przez lingwistów, uniemożliwiając poprawną transkrypcję nowych pojęć czy nazw własnych \cite{pondel2024e2e, pudo2024optimizing}. \end{itemize}
+Przełomem okazało się wprowadzenie \textbf{architektury End-to-End (E2E)}, która zastąpiła skomplikowany łańcuch modułów pojedynczą, zintegrowaną siecią neuronową, mapującą wejściowy sygnał audio (najczęściej w postaci spektrogramu) bezpośrednio na sekwencję znaków lub słów \cite{pondel2024e2e}. Ewolucja w ramach samego nurtu E2E postępowała niezwykle dynamicznie wraz z rozwojem architektur głębokich:
+\begin{itemize}
+    \item \textbf{Rekurencyjne sieci neuronowe (RNN -- \textit{Recurrent Neural Networks}) oraz sieci o długiej pamięci krótkotrwałej (LSTM -- \textit{Long Short-Term Memory}):} Były jednymi z pierwszych modeli stosowanych w systemach E2E ze względu na ich naturalną zdolność do przetwarzania sekwencji czasowych \cite{pondel2024e2e}. Choć potrafiły uchwycić kontekst historyczny wypowiedzi, ich ograniczeniem był relatywnie krótki horyzont pamięci oraz brak możliwości zrównoleglenia procesu uczenia \cite{pondel2024e2e}.
+    \item \textbf{Splotowe sieci neuronowe (CNN -- \textit{Convolutional Neural Networks}):} Klasycznym przykładem tej architektury jest model QuartzNet \cite{pondel2024e2e}. Zastosowanie filtrów splotowych przesuwających się po mel-spektrogramach wyeliminowało potrzebę segmentacji danych, a kontekst zależności czasowych był aproksymowany poprzez odpowiednią głębokość sieci \cite{pondel2024e2e}.
+    \item \textbf{Architektury oparte na Transformerach:} Wykorzystanie mechanizmu samo-uwagi (\textit{Self-Attention}) zrewolucjonizowało dziedzinę ASR, umożliwiając jednoczesną analizę lokalnego kontekstu akustycznego oraz globalnego kontekstu semantycznego zdania \cite{pondel2024e2e}. Jest to szczególnie istotne dla języków fleksyjnych o swobodnym szyku zdań, takich jak język polski \cite{pondel2024e2e}. Nowoczesne implementacje, takie jak FastConformer czy OpenAI Whisper, stanowią hybrydę łączącą zalety warstw splotowych (ekstrakcja lokalnych cech audio) z blokami Transformer (globalne modelowanie języka) \cite{pondel2024e2e, ferraro2023benchmarking}.
+\end{itemize}
+
+Przejście od skomplikowanych struktur statystycznych do zunifikowanych modeli głębokich nie tylko uprościło proces uczenia maszynowego (eliminacja \textit{forced alignment}), ale przede wszystkim pozwoliło na globalną optymalizację parametrów (\textit{joint optimization}), co przełożyło się na radykalny spadek wyrazowej stopy błędów (WER -- \textit{Word Error Rate}) oraz znakowej stopy błędów (CER -- \textit{Character Error Rate}) w rzeczywistych, trudnych akustycznie warunkach \cite{pondel2024e2e, pudo2024optimizing}.
+
 
 
 \subsection{Kluczowe pojęcia: fonemy, modele akustyczne, modele językowe}
+% Sekcja ta ma pełnić rolę słownika pojęciowego pracy, precyzującego podstawowe pojęcia lingwistyczne i matematyczne.
 
+%     Co opisać:
+%         Fonemy i reprezentacje akustyczne: Zdefiniuj fonem jako najmniejszą jednostkę językową i opisz, jak sygnał dźwiękowy jest konwertowany na cechy akustyczne – np. współczynniki MFCC (Mel Frequency Cepstral Coefficients) czy spektrogramy, które stanowią graficzny obraz fali dźwiękowej poddawany dalszej analizie.
+%         Model akustyczny (AM): Opisz jego rolę – mapowanie wyekstrahowanych cech akustycznych na reprezentacje fonetyczne lub bezpośrednio na znaki tekstu.
+%         Model językowy (LM): Wyjaśnij jego zadanie – modelowanie prawdopodobieństwa wystąpienia po sobie określonych sekwencji słów w celu korekty hipotez akustycznych. Porównaj klasyczne modele n-gramowe z nowoczesnymi, opartymi na głębokich sieciach neuronowych.
+%         Słownik wymowy (Lexicon/PM): Opisz go jako niezbędny pomost między reprezentacją akustyczną (dźwiękiem) a słowami w podejściu konwencjonalnym
 
 \subsection{Metody uczenia modeli STT (HMM, DNN, Transformer, Whisper)}
+% To techniczne jądro teorii, prezentujące matematyczne i architektoniczne fundamenty uczenia modeli rozpoznawania mowy.
 
+%     Co opisać:
+%         Ukryte Modele Markowa (HMM): Wyjaśnij ich działanie jako modelu statystycznego opartego na stanach ukrytych i zmiennych obserwowanych.
+%         Głębokie sieci neuronowe (DNN, RNN, CNN): Opisz, jak sieci rekurencyjne (RNN/LSTM) radzą sobie z danymi sekwencyjnymi, a sieci splotowe (CNN) analizują spektrogramy audio.
+%         Koncepcja CTC (Connectionist Temporal Classification): Kluczowy algorytm, który umożliwił dopasowanie czasowe nagrania do tekstu bez konieczności ręcznego podziału na fonemy.
+%         Transformer i Conformer (Self-Attention): Wyjaśnij, dlaczego mechanizm samo-uwagi zrewolucjonizował dziedzinę, pozwalając na jednoczesną analizę kontekstu lokalnego (sąsiednich dźwięków) oraz globalnego (całego zdania).
+%         Weak Supervision i Self-Supervised Learning (Whisper, wav2vec): Opisz uczenie bez nadzoru na ogromnych zbiorach danych (np. wav2vec 2.0 uczony na surowym audio) oraz koncepcję modelu Whisper opartego na słabym nadzorze na wielką skalę (680 tys. godzin nagrań).
+%     Gdzie dokładnie czytać w Twoich źródłach:
+%         Artykuł Pondel-Sycz i in.: Sekcja II.B „End-To-End ASR” [543–546] wprost omawia i porównuje działanie RNN, CNN oraz Transformerów w mowie. Dodatkowo sekcja III.B szczegółowo opisuje architektury konkretnych modeli: QuartzNet, FastConformer, Wav2Vec 2.0 i Whisper [551–556].
+%         Artykuł Ferraro i in. (Benchmarking): Sekcja 2.1 „Open Source” (strony z opisami modeli Conformer, HuBERT, SpeechBrain, WhisperX) [472–479].
+%         Rozprawa doktorska Mikołaja Pudo: Rozdział 2.3 oraz 6 na temat Semi-Supervised Learning (SSL). Rysunek 4 na stronie 26 przedstawia genialny, czytelny schemat różnic między uczeniem nienadzorowanym, częściowo nadzorowanym (SSL) a samo-nadzorowanym.
 
 \subsection{Standardy i protokoły wykorzystywane w systemach STT}
 
+% Podrozdział o charakterze inżynierskim – niezbędny w pracy o profilu programistycznym (React + FastAPI).
 
+%     Co opisać:
+%         Strumieniowanie vs Przetwarzanie wsadowe (Real-time vs Batch): Wyjaśnij różnice architektoniczne między przesyłaniem audio w małych fragmentach (wymaga niskich opóźnień, protokołu WebSocket lub gRPC) a wysyłaniem całego pliku (asynchroniczne REST API, FastAPI).
+%         Formaty i parametryzacja audio: Opisz znaczenie częstotliwości próbkowania (standardy 16 kHz dla większości modeli mowy vs 48 kHz w systemach studyjnych), głębi bitowej (16-bit), liczby kanałów (mono – wymagane przez większość API i modeli lokalnych) oraz kodeków bezstratnych (PCM/WAV) i stratnych (MP3).
+%         Web Speech API: Opisz standard przeglądarkowy – jak działa wbudowany w przeglądarki mechanizm rozpoznawania mowy (często zależny od silnika dostarczanego przez producenta systemu/przeglądarki np. Google na Chrome).
+%     Gdzie dokładnie czytać w Twoich źródłach:
+%         Rozprawa doktorska Mikołaja Pudo: Sekcja 1.7 „Client-server vs. On-device Processing” (strona 18) – tłumaczy podział ról w architekturze sieciowej. Dodatkowo podrozdział 4.2.3 opisuje techniczną stronę zapisu plików WAV w różnych bazach (16 kHz vs 48 kHz).
+%         Artykuł Chlewickiego i in.: Sekcja „Usługi rozpoznawania mowy w chmurze” oraz Rycina 2 (schemat blokowy aplikacji) – dobrze obrazuje komunikację HTTP i deserializację formatów JSON.
 \subsection{Wyzwania technologiczne: szumy, akcenty, kontekst, modele on-device}
+% Ta sekcja będzie stanowiła bezpośredni pomost teoretyczny do Twoich własnych badań eksperymentalnych (Rozdział 6).
+
+%     Co opisać:
+%         Warunki akustyczne (hałas i szum): Opisz wpływ tła, pogłosu i echa na spadek skuteczności transkrypcji (wzrost WER). Przedstaw pojęcie redukcji szumów (AEC – Acoustical Echo Cancellation, NR – Noise Reduction).
+%         Zróżnicowanie mówców (wiek, akcenty, tempo): Opisz wyzwania związane z wiekiem mówców. Wykorzystaj tu wyniki badań Chlewickiego wykazujące gorszą jakość transkrypcji u dzieci ze względu na niew pełni wykształcony aparat mowy.
+%         Wyzwania modeli lokalnych (on-device): Ograniczenia sprzętowe urządzeń mobilnych/przeglądarek (zapotrzebowanie na RAM, CPU/GPU). Opisz metody optymalizacji i kompresji modeli: kwantyzację (np. przejście z FP32 do INT8), destylację wiedzy (uczenie małego studenta od dużego nauczyciela) oraz pruning (przycinanie wag).
+%         Zjawisko halucynacji w modelach E2E: Opisz problem modeli sekwencyjnych (takich jak Whisper), które w warunkach ciszy lub silnego szumu potrafią generować powtarzający się, nieistniejący tekst.
+%     Gdzie dokładnie czytać w Twoich źródłach:
+%         Artykuł Chlewickiego i in.: Przeczytaj sekcję „Wyniki działania aplikacji” (szczególnie ryc. 6 i ryc. 7) – znajdziesz tam doskonałe dane o trudnościach modeli w rozpoznawaniu mowy dziecięcej oraz o wpływie emocji i szumów otoczenia [644–648].
+%         Rozprawa doktorska Mikołaja Pudo oraz recenzja prof. Ślota: Pudo całą swoją rozprawę poświęcił optymalizacji on-device. Przeczytaj wstęp do Rozdziału 3 (Contribution) oraz opisy metod destylacji i kwantyzacji z sekcji 4.4.1.
+%         Artykuł Pondel-Sycz i in.: Sekcja V „Results” i VI „Conclusions” – autorki opisują tam zjawisko błędnej detekcji języka (np. mylenie polskiego z rosyjskim lub ukraińskim pod wpływem szumu) oraz problem nadmiernego dopasowania (overfitting) modeli.
