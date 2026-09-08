@@ -1,0 +1,21 @@
+% ==================== DRUGI WYKRES ====================
+\begin{tikzpicture}[
+    node distance=0.6cm and 0.6cm,
+    block/.style={rectangle, draw=black, very thick, minimum width=2.6cm, minimum height=1.2cm, align=center},
+    arrow/.style={-Stealth, line width=1pt}
+]
+
+    % Węzły (Nodes)
+    \node (speech) [align=center, font=\bfseries] {Speech\\signal};
+    \node (fe) [block, right=of speech] {\textbf{Feature}\\\textbf{extraction}\\\small(Mostly MFCC)};
+    \node (enc) [block, right=of fe] {\textbf{Encoder}\\\scriptsize(transition of features to\\\scriptsize high-level representations)};
+    \node (dec) [block, right=of enc] {\textbf{Decoder}\\\scriptsize(classification and\\\scriptsize transcription decoding)};
+    \node (trans) [align=center, font=\bfseries, right=of dec] {Transcription\\(text)};
+
+    % Strzałki
+    \draw [arrow] (speech) -- (fe);
+    \draw [arrow] (fe) -- (enc);
+    \draw [arrow] (enc) -- (dec);
+    \draw [arrow] (dec) -- (trans);
+
+\end{tikzpicture}

@@ -1,0 +1,25 @@
+
+% ==================== PIERWSZY WYKRES ====================
+\begin{tikzpicture}[
+    node distance=0.8cm and 0.8cm,
+    block/.style={rectangle, draw=black, very thick, minimum width=2.2cm, minimum height=1.2cm, align=center, font=\bfseries},
+    arrow/.style={-Stealth, line width=1pt}
+]
+
+    % Węzły (Nodes)
+    \node (speech) [align=center, font=\bfseries] {Speech\\signal};
+    \node (fe) [block, right=of speech] {Feature\\extraction};
+    \node (am) [block, right=of fe] {Acoustic\\model};
+    \node (dec) [block, right=of am] {Decoder};
+    \node (trans) [align=center, font=\bfseries, right=of dec] {Transcription\\(text)};
+    \node (lex) [block, above=of dec] {Lexicon};
+    \node (lm) [block, below=of dec] {Language\\model};
+
+    % Strzałki
+    \draw [arrow] (speech) -- (fe);
+    \draw [arrow] (fe) -- (am);
+    \draw [arrow] (am) -- (dec);
+    \draw [arrow] (dec) -- (trans);
+    \draw [arrow] (lex) -- (dec);
+    \draw [arrow] (lm) -- (dec);
+\end{tikzpicture}
