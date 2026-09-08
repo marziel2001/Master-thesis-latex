@@ -28,13 +28,13 @@ Mimo ogromnego postępu, precyzyjne rozpoznawanie mowy pozostaje złożonym wyzw
 
 
 Rozwój systemów automatycznego rozpoznawania mowy na przestrzeni ostatnich dekad można podzielić na dwie główne epoki technologiczne: klasyczną architekturę modułową (hybrydową) oraz nowoczesną architekturę zintegrowaną typu End-to-End (E2E) \cite{pondel2024e2e}. Zrozumienie różnic między tymi podejściami jest kluczowe dla oceny postępu wydajnościowego i dokładności współczesnych modeli transkrypcyjnych.
-\textbf{Podejście konwencjonalne (modułowe)} opierało się na paradygmacie podziału procesu rozpoznawania na niezależne od siebie, osobno trenowane komponenty:
+\textbf{Podejście konwencjonalne (modułowe)} opierało się na paradygmacie podziału procesu rozpoznawania na niezależne od siebie, osobno trenowane komponenty \cite{pondel2024e2e}:
 \begin{itemize} 
     \item model akustyczny (AM – \textit{Acoustic Model})
-    \item słownik wymowy (PM – \textit{Pronunciation Model}) 
-    \item oraz model językowy (LM – \textit{Language Model}) \cite{pondel2024e2e}. 
+    \item słownik wymowy (PM – \textit{Pronunciation Model})
+    \item oraz model językowy (LM – \textit{Language Model})
 \end{itemize}
-    Standardem w modelowaniu akustycznym przez wiele lat były Ukryte Modele Markowa (HMM) połączone z modelami mieszanin rozkładów Gaussa (HMM-GMM) \cite{pudo2024optimizing}. W tej konfiguracji stany ukryte modelu HMM reprezentowały fonemy, a rozkłady GMM opisywały prawdopodobieństwo emisji cech akustycznych, najczęściej współczynników mel-cepstralnych częstotliwości (MFCC -- \textit{Mel-Frequency Cepstral Coefficients}), dla poszczególnych stanów \cite{pondel2024e2e}. W późniejszym okresie komponent GMM został zastąpiony przez głębokie sieci neuronowe, co dało początek wydajniejszym systemom hybrydowym HMM-DNN \cite{pudo2024optimizing}.
+Standardem w modelowaniu akustycznym przez wiele lat były Ukryte Modele Markowa (HMM) połączone z modelami mieszanin rozkładów Gaussa (HMM-GMM) \cite{pudo2024optimizing}. W tej konfiguracji stany ukryte modelu HMM reprezentowały fonemy, a rozkłady GMM opisywały prawdopodobieństwo emisji cech akustycznych, najczęściej współczynników mel-cepstralnych częstotliwości (MFCC -- \textit{Mel-Frequency Cepstral Coefficients}), dla poszczególnych stanów \cite{pondel2024e2e}. W późniejszym okresie komponent GMM został zastąpiony przez głębokie sieci neuronowe, co dało początek wydajniejszym systemom hybrydowym HMM--DNN \cite{pudo2024optimizing}.
 %To sformułowanie brzmi bardzo skomplikowanie, ponieważ dotyczy absolutnego jądra matematycznego klasycznych systemów rozpoznawania mowy. Abyś mógł to łatwo zrozumieć i opisać w pracy własnymi słowami, rozbijmy to zdanie na czynniki pierwsze za pomocą prostego porównania.
 % Wyobraź sobie analogię: Gra na pianinie w ciemnym pokoju
 % Wyobraź sobie, że stoisz w całkowicie ciemnym pokoju. Ktoś obok gra na pianinie, a Ty próbujesz zapisać nuty, które słyszysz:
