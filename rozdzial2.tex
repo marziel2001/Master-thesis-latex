@@ -4,28 +4,9 @@ Technologia automatycznego rozpoznawania mowy (ASR – Automatic Speech Recognit
 Motywacją do rozwoju systemów STT jest fakt, że mówienie stanowi dla ludzi najbardziej bezpośredni, naturalny i intuicyjny sposób komunikacji. Jak zauważa Mikołaj Pudo w swojej rozprawie doktorskiej \cite{pudo2024optimizing}, przez dziesięciolecia dominującym paradygmatem interfejsów użytkownika był tekst wprowadzany za pomocą klawiatury oraz urządzenia wskazujące, jednak rozwój technologii przetwarzania mowy otworzył drogę do upowszechnienia interfejsów głosowych (VUI – \textit{Voice User Interfaces}). W publikacji poświęconej systemom wspomagającym Chlewicki i in. \cite{chlewicki2024potencjal} podkreślają, że interfejsy te stanowią naturalną ewolucję metod interakcji, zastępując lub uzupełniając tradycyjne rozwiązania, co ma szczególne znaczenie w aplikacjach mobilnych oraz systemach asystenckich wspierających niezależność osób z niepełnosprawnościami.
 W architekturze nowoczesnych systemów, takich jak inteligentni asystenci, moduł rozpoznawania mowy pełni rolę pierwszego ogniwa w łańcuchu przetwarzania informacji. Zgodnie z modelem przedstawionym przez Pondel-Sycz i in. \cite{pondel2024e2e}, proces ten obejmuje zazwyczaj następujące etapy: \begin{itemize} \item \textbf{Akwizycja danych:} Rejestracja dźwięku przez mikrofon urządzenia. \item \textbf{Dekodowanie:} Przetworzenie sygnału przez model akustyczny i językowy w celu wygenerowania tzw. hipotezy tekstowej. \item \textbf{Analiza semantyczna:} Przekazanie tekstu do modułu rozumienia języka naturalnego (NLU), który interpretuje intencję użytkownika. \end{itemize}
 Mimo ogromnego postępu, precyzyjne rozpoznawanie mowy pozostaje złożonym wyzwaniem ze względu na znaczną heterogeniczność danych. Autorzy artykułu dotyczącego benchmarkingu usług STT \cite{ferraro2023benchmarking} wskazują, że do najważniejszych czynników wpływających na jakość transkrypcji należą warunki akustyczne (echo, pogłos, szum tła), zróżnicowanie mówców (rytm, ton, akcent) oraz specyfika danego języka, co w przypadku języka polskiego jest szczególnie widoczne ze względu na jego złożoną strukturę.
-% [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE]
 
 
 \subsection{Ewolucja systemów ASR (Automatic Speech Recognition)}
-% W tej sekcji musisz
-% - nakreślić historyczny i technologiczny łuk rozwoju technologii rozpoznawania mowy.
-%     Co opisać:
-%         Klasyczny paradygmat hybrydowy/modułowy (HMM-GMM oraz HMM-DNN):
-% - Wyjaśnij, że dawne systemy składały się z trzech oddzielnie trenowanych komponentów
-% - modelu akustycznego AM
-% - leksykonu PM
-% - modelu językowego LM).
-
-% Opisz konieczność stosowania czasochłonnego procesu forced alignment (ręcznego wyrównywania nagrań do ramek czasowych) oraz ograniczenia tzw. Out-Of-Vocabulary (słów spoza słownika PM).
-%         Przejście do paradygmatu End-to-End (E2E): 
-% Wyjaśnij, jak zintegrowane sieci neuronowe zastąpiły podejście modułowe, umożliwiając bezpośrednie mapowanie sygnału audio na tekst. 
-
-% Wspomnij o wyeliminowaniu skomplikowanego podziału na fonemy na rzecz mapowania całych wypowiedzi lub sub-słów (np. za pomocą algorytmu BPE).
-%     Gdzie dokładnie czytać w Twoich źródłach:
-%         Artykuł Pondel-Sycz i in.: Przeczytaj uważnie sekcję II.A „Conventional ASR” oraz II.B „End-To-End ASR”. Znajdziesz tam doskonałe i zwięzłe porównanie obu tych światów.
-%         Rozprawa doktorska Mikołaja Pudo: Przeczytaj sekcję 2.1 „Custom Keyword Spotting” (strony 20–21). Pudo świetnie opisuje tam techniczną ewolucję systemów od modeli statystycznych Markowa (HMM-GMM) po nowoczesne architektury z mechanizmem uwag (attention) i CTC.
-
 
 Rozwój systemów automatycznego rozpoznawania mowy na przestrzeni ostatnich dekad można podzielić na dwie główne epoki technologiczne: klasyczną architekturę modułową (hybrydową) oraz nowoczesną architekturę zintegrowaną typu End-to-End (E2E) \cite{pondel2024e2e}. Zrozumienie różnic między tymi podejściami jest kluczowe dla oceny postępu wydajnościowego i dokładności współczesnych modeli transkrypcyjnych.
 \textbf{Podejście konwencjonalne (modułowe)} (Rysunek \ref{fig:conventional_asr}) opierało się na paradygmacie podziału procesu rozpoznawania na niezależne od siebie, osobno trenowane komponenty \cite{pondel2024e2e}:
@@ -77,10 +58,8 @@ Przejście od skomplikowanych struktur statystycznych do zunifikowanych modeli g
 
 
 
-\subsection{Kluczowe pojęcia: fonemy, modele akustyczne, modele językowe}
-
-\subsection{Kluczowe pojęcia: fonemy, modele akustyczne, modele językowe}
-
+% 080926
+% [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE]
 
 % Sekcja ta ma pełnić rolę słownika pojęciowego pracy, precyzującego podstawowe pojęcia lingwistyczne i matematyczne.
 
@@ -89,6 +68,72 @@ Przejście od skomplikowanych struktur statystycznych do zunifikowanych modeli g
 %         Model akustyczny (AM): Opisz jego rolę – mapowanie wyekstrahowanych cech akustycznych na reprezentacje fonetyczne lub bezpośrednio na znaki tekstu.
 %         Model językowy (LM): Wyjaśnij jego zadanie – modelowanie prawdopodobieństwa wystąpienia po sobie określonych sekwencji słów w celu korekty hipotez akustycznych. Porównaj klasyczne modele n-gramowe z nowoczesnymi, opartymi na głębokich sieciach neuronowych.
 %         Słownik wymowy (Lexicon/PM): Opisz go jako niezbędny pomost między reprezentacją akustyczną (dźwiękiem) a słowami w podejściu konwencjonalnym
+
+
+\subsection{Kluczowe pojęcia: fonemy, modele akustyczne, modele językowe}
+
+Zrozumienie matematycznych i fizycznych aspektów przetwarzania mowy wymaga zdefiniowania podstawowych pojęć z zakresu językoznawstwa, akustyki oraz cyfrowego przetwarzania sygnałów (DSP -- \textit{Digital Signal Processing}) \cite[s.~338--354]{jurafsky2026}. W tradycyjnym, modułowym ujęciu systemy automatycznego rozpoznawania mowy (ASR) dekomponują proces transkrypcji na analizę elementarnych jednostek mowy, ekstrakcję cech fizycznych fali dźwiękowej oraz probabilistyczne modelowanie struktury języka \cite[s.~358]{jurafsky2026, pondel2024e2e}.
+
+\subsubsection{Lingwistyczne jednostki mowy: głoski i fonemy}
+W fizycznej sferze mowy podstawowym, elementarnym dźwiękiem podlegającym rejestracji jest \textbf{głoska} (ang. \textit{phone}) \cite[s.~328]{jurafsky2026}. Do zapisu wymowy słów w postaci ciągów głosek stosuje się międzynarodowe standardy transkrypcji fonetycznej, z których najważniejszym jest \textbf{Międzynarodowy Alfabet Fonetyczny} (IPA -- \textit{International Phonetic Alphabet}) \cite[s.~328--329]{jurafsky2026}. W technologiach komputerowych i systemach syntezy mowy historycznie wykształcił się uproszczony standard \textbf{ARPAbet}, który reprezentuje głoski za pomocą znaków alfanumerycznych ASCII (np. zapis [iy] odpowiada samogłosce w angielskim słowie \textit{lily}) \cite[s.~330]{jurafsky2026}.
+
+W przeciwieństwie do fizycznie artykułowanej głoski, \textbf{fonem} jest abstrakcyjną jednostką językową \cite[s.~329]{jurafsky2026}. Definiuje się go jako najmniejszą jednostkę systemu fonologicznego, która pozwala na odróżnienie znaczenia wyrazów (np. zmiana fonemu różnicuje polskie słowa ,,kos'' i ,,nos''). Wyzwanie inżynieryjne w systemach ASR wynika z faktu, że ten sam abstrakcyjny fonem może brzmieć fizycznie inaczej w zależności od kontekstu fonetycznego, tempa mowy, cech indywidualnych mówcy czy emocji; te warianty realizacyjne tego samego fonemu nazywane są \textbf{alofonami} \cite[s.~329]{jurafsky2026}.
+
+\subsubsection{Cyfrowe przetwarzanie sygnału mowy i spektrogramy}
+Przetwarzanie analogowej fali dźwiękowej przez komputer wymaga jej uprzedniej cyfryzacji (konwersji A/D -- \textit{Analog-to-Digital}), która przebiega dwuetapowo \cite[s.~338, 348]{jurafsky2026}:
+\begin{itemize}
+    \item \textbf{Próbkowanie (ang. \textit{sampling}):} Polega na dyskretnym pomiarze amplitudy fali akustycznej w regularnych odstępach czasu \cite[s.~348]{jurafsky2026}. Zgodnie z twierdzeniem Nyquista--Shannona, maksymalna częstotliwość sygnału, jaką można poprawnie zarejestrować, jest równa połowie częstotliwości próbkowania (tzw. częstotliwość Nyquista) \cite[s.~348]{jurafsky2026}. Dla mowy telefonicznej (o paśmie ograniczonym filtrami centrali) wystarczające jest próbkowanie z częstotliwością $8$~kHz, natomiast standardem dla nagrań wysokiej jakości (szerokopasmowych) i nowoczesnych systemów ASR jest częstotliwość $16$~kHz \cite[s.~348]{jurafsky2026}, \cite[s.~34]{pudo2024optimizing}.
+    \item \textbf{Kwantyzacja (ang. \textit{quantization}):} Polega na odwzorowaniu ciągłych, rzeczywistych wartości amplitudy fali na skończoną reprezentację całkowitoliczbową \cite[s.~338--339]{jurafsky2026}. W standardzie liniowym PCM najczęściej stosuje się zapis 16-bitowy (zakres od $-32768$ do $32767$) \cite[s.~339]{jurafsky2026}. Niekiedy stosuje się kompresję nieliniową (np. standard $\mu$-law), która odwzorowuje nieliniową, zbliżoną do logarytmicznej czułość ludzkiego słuchu na małe natężenia dźwięku \cite[s.~339]{jurafsky2026}.
+\end{itemize}
+
+Sygnał mowy jest niestacjonarny -- jego właściwości statystyczne stale zmieniają się w czasie \cite[s.~349]{jurafsky2026}. Aby móc poddać go analizie matematycznej, stosuje się proces \textbf{okienkowania} (ang. \textit{windowing}), czyli podziału sygnału na krótkie, nakładające się na siebie segmenty zwane \textbf{ramkami} (ang. \textit{frames}), wewnątrz których sygnał wykazuje właściwości w przybliżeniu stacjonarne \cite[s.~349]{jurafsky2026}. Typowy proces parametryzacji mowy wykorzystuje ramki o szerokości $25$~ms, przesuwane o krok (ang. \textit{stride}) równy $10$~ms \cite[s.~350]{jurafsky2026}. Aby zapobiec zniekształceniom widmowym (ang. \textit{spectral leakage}) wywołanym nagłym ucięciem fali na granicach ramki, sygnał w każdej ramce jest mnożony przez funkcję okna wygładzającego, najczęściej \textbf{okno Hamminga} \cite[s.~350]{jurafsky2026}:
+\begin{equation}
+    y[n] = w[n] s[n], \quad w[n] = 0.54 - 0.46 \cos\left(\frac{2\pi n}{N-1}\right)
+\end{equation}
+gdzie $s[n]$ to dyskretny sygnał wejściowy, a $N$ oznacza liczbę próbek w ramce \cite[s.~350]{jurafsky2026}.
+
+Dla każdej wygładzonej ramki obliczana jest \textbf{Dyskretna Transformata Fouriera} (DFT -- \textit{Discrete Fourier Transform}), zazwyczaj realizowana za pomocą szybkiego algorytmu FFT (\textit{Fast Fourier Transform}) \cite[s.~350--351]{jurafsky2026}:
+\begin{equation}
+    X[k] = \sum_{n=0}^{N-1} x[n] e^{-j \frac{2\pi}{N} kn}
+\end{equation}
+Transformacja ta pozwala na wyznaczenie energii sygnału w poszczególnych dyskretnych pasmach częstotliwości \cite[s.~351]{jurafsky2026}. Nakładając widma FFT kolejnych ramek czasowych na siebie, otrzymuje się reprezentację częstotliwościowo-czasową zwaną \textbf{spektrogramem} \cite[s.~343--344]{jurafsky2026}. Wizualizuje on energię sygnału w funkcji czasu (oś X) i częstotliwości (oś Y) \cite[s.~344]{jurafsky2026}. Na spektrogramie głosek dźwięcznych (np. samogłosek) widoczne są charakterystyczne wzmocnienia rezonansowe traktu głosowego, zwane \textbf{formantami} (oznaczanymi kolejno jako $F_1, F_2, F_3$), odzwierciedlające kształt jamy ustnej i stanowiące akustyczną sygnaturę poszczególnych fonemów \cite[s.~345--347]{jurafsky2026}.
+
+\subsubsection{Log-Mel spektrogram i współczynniki MFCC}
+Ludzki narząd słuchu nie odbiera częstotliwości dźwięku w sposób liniowy; posiadamy znacznie wyższą rozdzielczość percepcji dla niskich tonów (do $1000$~Hz) \cite[s.~351]{jurafsky2026}. Do matematycznego zamodelowania tej właściwości służy logarytmiczna \textbf{skala Mel} \cite[s.~351]{jurafsky2026}. Przejście z częstotliwości fizycznej $f$ (w hercach) na melową częstotliwość percepcyjną $m$ opisuje wzór \cite[s.~352]{jurafsky2026}:
+\begin{equation}
+    m = 1127 \ln\left(1 + \frac{f}{700}\right)
+\end{equation}
+
+W celu ekstrakcji cech energetyczne widmo FFT jest filtrowane przez tzw. \textbf{bank filtrów Mel} (ang. \textit{Mel filter bank}) -- zestaw trójkątnych, nakładających się filtrów rozmieszczonych gęsto w zakresie niskich częstotliwości i rzadziej w wyższych \cite[s.~351--352]{jurafsky2026}. Po zsumowaniu energii w każdym z filtrów i obliczeniu logarytmu naturalnego otrzymuje się reprezentację \textbf{Log-Mel Spectrum} \cite[s.~352]{jurafsky2026}. Reprezentacja ta (zazwyczaj o rozdzielczości 80 lub 128 kanałów) jest najpopularniejszym wejściem dla nowoczesnych modeli End-to-End \cite[s.~352]{jurafsky2026}, \cite[s.~315]{pondel2024e2e}.
+
+W klasycznym paradygmacie ASR oraz systemach hybrydowych kolejnym etapem przetwarzania było wyznaczanie \textbf{współczynników mel-cepstralnych częstotliwości} (MFCC -- \textit{Mel-Frequency Cepstral Coefficients}) \cite[s.~352--354]{jurafsky2026}, \cite[s.~315]{pondel2024e2e}. Ich celem jest matematyczne rozdzielenie pobudzenia krtaniowego od rezonansowej charakterystyki filtracji traktu głosowego \cite[s.~352--353]{jurafsky2026}. Rozdzielenie to (dekonwolucja) realizowane jest poprzez wyznaczenie tzw. \textbf{cepstrum} (widma logarytmu widma) przy użyciu Dyskretnej Transformaty Kosinusowej (DCT) \cite[s.~353--354]{jurafsky2026}:
+\begin{equation}
+    c[n] = \sum_{k=0}^{N-1} \log(|X[k]|) e^{j \frac{2\pi}{N} kn}
+\end{equation}
+
+Dla potrzeb rozpoznawania mowy odcina się tylko pierwszych 12 współczynników cepstru, które reprezentują wolnozmienną obwiednię widmową traktu głosowego \cite[s.~352]{jurafsky2026}. Kompletny, klasyczny wektor cech MFCC jest \textbf{39-wymiarowy} i składa się z \cite[s.~352]{jurafsky2026}:
+\begin{enumerate}
+    \item 12 współczynników cepstralnych reprezentujących statyczny kształt traktu głosowego,
+    \item 1 współczynnika energii całkowitej ramki,
+    \item 13 współczynników delta (pierwszych pochodnych czasowych określających prędkość zmian cech akustycznych),
+    \item 13 współczynników double-delta (drugich pochodnych czasowych określających przyspieszenie zmian).
+\end{enumerate}
+Współczynniki te charakteryzują się pożądaną matematycznie właściwością -- ich wariancje są nieskorelowane, co ułatwiało modelowanie statystyczne w klasycznych algorytmach GMM \cite[s.~352]{jurafsky2026}, \cite[s.~20]{pudo2024optimizing}.
+
+\subsubsection{Probabilistyczny model klasyczny: Noisy Channel Model}
+W klasycznym ujęciu statystycznym zadanie rozpoznawania mowy definiuje się jako poszukiwanie najbardziej prawdopodobnej sekwencji słów $W^* = (w_1, w_2, \dots, w_M)$ dla danego ciągu akustycznych obserwacji $X = (x_1, x_2, \dots, x_T)$ \cite[s.~358]{jurafsky2026}, \cite[s.~17, 20]{pudo2024optimizing}. Zgodnie z regułą Bayesa proces ten opisuje \textbf{fundamentalne równanie statystycznego rozpoznawania mowy} \cite[s.~358]{jurafsky2026}, \cite[s.~17]{pudo2024optimizing}:
+\begin{equation}
+    W^* = \arg\max_{W} P(W|X) = \arg\max_{W} \frac{P(X|W)P(W)}{P(X)} = \arg\max_{W} P(X|W)P(W)
+\end{equation}
+Równanie to rozbija system ASR na trzy niezależne komponenty \cite[s.~358]{jurafsky2026}, \cite[s.~315--316]{pondel2024e2e}, \cite[s.~17]{pudo2024optimizing}:
+\begin{enumerate}
+    \item \textbf{Model Akustyczny (AM -- \textit{Acoustic Model}):} Odpowiada za czynnik $P(X|S)$ (wykorzystując stany ukryte $S$ w modelach HMM), czyli dopasowanie wektorów cech akustycznych (np. MFCC) do reprezentacji fonetycznych \cite[s.~358]{jurafsky2026}, \cite[s.~17]{pudo2024optimizing}.
+    \item \textbf{Model Językowy (LM -- \textit{Language Model}):} Odpowiada za prawdopodobieństwo aprioryczne $P(W)$, określając probabilistyczną strukturę wystąpienia danej sekwencji słów w naturalnym języku (klasycznie realizowany przez modele $n$-gramowe) \cite[s.~358]{jurafsky2026}, \cite[s.~315]{pondel2024e2e}.
+    \item \textbf{Słownik wymowy / Leksykon (PM -- \textit{Pronunciation Model}):} Definiuje prawdopodobieństwo $P(S|W)$, mapując sekwencje słów $W$ na ciągi fonemów $S$ zdefiniowane w leksykonie \cite[s.~358]{jurafsky2026}, \cite[s.~315]{pondel2024e2e}.
+\end{enumerate}
+
+To probabilistyczne i sygnałowe ujęcie stanowi niezbędny punkt wyjścia do zrozumienia nowoczesnych architektur End-to-End, które dążą do zintegrowania tych rozproszonych elementów w jedną, spójną sieć neuronową \cite[s.~315--316]{pondel2024e2e}.
+
 
 \subsection{Metody uczenia modeli STT (HMM, DNN, Transformer, Whisper)}
 % To techniczne jądro teorii, prezentujące matematyczne i architektoniczne fundamenty uczenia modeli rozpoznawania mowy.
