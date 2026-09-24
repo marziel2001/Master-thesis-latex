@@ -100,22 +100,6 @@ W praktycznym wyznaczaniu współczynników MFCC zamiast pełnej IDFT stosuje si
 
 \subsubsection{Probabilistyczny model klasyczny: Noisy Channel Model}
 
-W konwencjonalnym (statystycznym) paradygmacie ASR proces rozpoznawania mowy opiera się na strukturze modułowej, w której zadanie transkrypcji dekomponuje się na niezależne podproblemy \cite[s.~315--316]{pondel2024e2e}. Matematycznie proces ten wywodzi się z tzw. modelu kanału ze współczynnikiem zakłóceń (ang. \textit{Noisy Channel Model}) i wykorzystuje regułę Bayesa.
-
-Cel dekodowania polega na wyznaczeniu najbardziej prawdopodobnej sekwencji słów $W^* = (w_1, w_2, \dots, w_M)$ dla danego ciągu wektorów obserwacji akustycznych $X = (x_1, x_2, \dots, x_T)$, pozyskanych w etapie ekstrakcji cech z kolejnych ramek czasowych \cite[s.~16--17]{pudo2024optimizing}:
-\begin{equation}
-     W^* = \arg\max_{W} P(W|X)
-\end{equation}
-
-Stosując regułę Bayesa, prawdopodobieństwo warunkowe  $P(W|X)$  przekształca się do postaci: \begin{equation} W^* = \arg\max_{W} \frac{P(X|W)P(W)}{P(X)} = \arg\max_{W} P(X|W)P(W) \end{equation} Mianownik  $P(X)$  reprezentuje prawdopodobieństwo aprioryczne zarejestrowanego sygnału akustycznego. Ponieważ jest on stały dla danej wypowiedzi, nie wpływa na wybór sekwencji słów maksymalizującej iloczyn i zostaje pominięty w procesie optymalizacji \cite[s.~17]{pudo2024optimizing}.
-Powyższa dekompozycja narzuca podział tradycyjnego systemu ASR na trzy kluczowe komponenty współpracujące z modułem dekodera \cite[s.~315--316]{pondel2024e2e}, \cite[s.~16--17]{pudo2024optimizing}:
-\begin{enumerate}
-    \item \textbf{Model Akustyczny (AM -- \textit{Acoustic Model}):} Odpowiada za wyznaczenie prawdopodobieństwa  $P(X|S)$ , określając, na ile dany ciąg obserwacji akustycznych  $X$  odpowiada sekwencjom jednostek fonetycznych  $S$  (klasycznie realizowany za pomocą Ukrytych Modeli Markowa z mieszaninami rozkładów gaussowskich, HMM-GMM) \cite[s.~315]{pondel2024e2e}, \cite[s.~20]{pudo2024optimizing}.
-    \item \textbf{Model Językowy (LM -- \textit{Language Model}):} Odpowiada za prawdopodobieństwo aprioryczne  $P(W)$ , określając probabilistyczną strukturę i płynność sekwencji słów  $W$  w danym języku naturalnym (klasycznie realizowany przez statystyczne modele  $n$ -gramowe) \cite[s.~315]{pondel2024e2e}.
-    \item \textbf{Słownik wymowy / Leksykon (PM -- \textit{Pronunciation Model}):} Mapuje słowa  $W$  na odpowiadające im sekwencje fonemów  $S$ , wiążąc warstwę leksykalną z akustyczną \cite[s.~315]{pondel2024e2e}.
-\end{enumerate}
-W tym podejściu spójność czasowa wymagała stosowania procedury wyrównywania wymuszonego (ang. \textit{forced alignment}), a każdy z komponentów trenowany był niezależnie \cite[s.~315--316]{pondel2024e2e}. Stanowi to główną różnicę w porównaniu do nowoczesnych architektur zintegrowanych (End-to-End), w których pojedyncza głęboka sieć neuronowa optymalizuje cały proces odwzorowania sygnału na tekst bezpośrednio \cite[s.~315--316]{pondel2024e2e}.
-% DOTĄD SPRAWDZONE CYTATY
 
 \subsection{Metody uczenia modeli STT (HMM, DNN, Transformer, Whisper)}
 % To techniczne jądro teorii, prezentujące matematyczne i architektoniczne fundamenty uczenia modeli rozpoznawania mowy.
