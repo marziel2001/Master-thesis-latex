@@ -99,7 +99,16 @@ W praktycznym wyznaczaniu współczynników MFCC zamiast pełnej IDFT stosuje si
 \end{enumerate}
 
 \subsubsection{Probabilistyczny model klasyczny: Noisy Channel Model}
+W konwencjonalnym (statystycznym) paradygmacie ASR proces rozpoznawania mowy opiera się na strukturze modułowej, w której zadanie transkrypcji dekomponuje się na trzy niezależne komponenty: Model Akustyczny (AM), Model Językowy (LM) oraz Model Wymowy (PM / Leksykon) \cite[s.~315]{pondel2024e2e}. Architektura ta wykorzystuje metaforę kanału ze współczynnikiem zakłóceń (ang. \textit{Noisy Channel Model}) i traktuje sygnał akustyczny jako zakłóconą wersję sekwencji słów \cite[s.~290]{columbia_asr}. Matematycznie cel dekodowania polega na wyznaczeniu najbardziej prawdopodobnej sekwencji słów $\hat{W} = (w_1, w_2, \dots, w_n)$ dla danego ciągu wektorów obserwacji akustycznych $O = (o_1, o_2, \dots, o_t)$ \cite[s.~291]{columbia_asr}:
+\begin{equation}
+    \hat{W} = \arg\max_{W} P(W|O)
+\end{equation}
 
+Zastosowanie reguły Bayesa pozwala przekształcić prawdopodobieństwo a posteriori $P(W|O)$ do postaci iloczynu dwóch czynników \cite[s.~291]{columbia_asr}:
+\begin{equation}
+    \hat{W} = \arg\max_{W} \frac{P(O|W)P(W)}{P(O)} = \arg\max_{W} {P(O|W)} \cdot {P(W)}
+\end{equation}
+Mianownik $P(O)$ reprezentuje prawdopodobieństwo aprioryczne sygnału i jako stały dla danej wypowiedzi zostaje pominięty w optymalizacji \cite[s.~291]{columbia_asr}. Dwa czynniki w liczniku definiują pojęcia probabilistyczne wyznaczane przez odpowiednie moduły ASR \cite[s.~291--292]{columbia_asr}: \begin{itemize} \item \textbf{Wiarygodność obserwacji ($P(O|W)$, ang. \textit{observation likelihood}):} wyznaczana przez \textbf{Model Akustyczny (AM)}. Obliczenie to wymaga użycia \textbf{Modelu Wymowy / Leksykonu (PM)}, który tłumaczy słowa $W$ na ciągi fonemów i stanów HMM \cite[s.~291--292, 317]{columbia_asr}. \item \textbf{Prawdopodobieństwo aprioryczne ($P(W)$, ang. \textit{prior probability}):} wyznaczane przez \textbf{Model Językowy (LM)}, określające prawdopodobieństwo wystąpienia danej sekwencji słów $W$ w języku naturalnym \cite[s.~291--292]{columbia_asr}. \end{itemize}
 
 \subsection{Metody uczenia modeli STT (HMM, DNN, Transformer, Whisper)}
 % To techniczne jądro teorii, prezentujące matematyczne i architektoniczne fundamenty uczenia modeli rozpoznawania mowy.
