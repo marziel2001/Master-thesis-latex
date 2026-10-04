@@ -58,7 +58,7 @@ W przeciwieństwie do fizycznie artykułowanej głoski, \textbf{fonem} jest abst
 Przetwarzanie analogowej fali dźwiękowej przez komputer wymaga jej uprzedniej cyfryzacji (konwersji A/D -- \textit{Analog-to-Digital}), która przebiega dwuetapowo:
 \begin{itemize}
     \item \textbf{Próbkowanie (ang. \textit{sampling}):} Polega na dyskretnym pomiarze amplitudy fali akustycznej w regularnych odstępach czasu. Zgodnie z twierdzeniem Nyquista--Shannona, maksymalna częstotliwość sygnału, jaką można poprawnie zarejestrować, jest równa połowie częstotliwości próbkowania (tzw. częstotliwość Nyquista). Dla mowy telefonicznej (o paśmie ograniczonym filtrami centrali) wystarczające jest próbkowanie z częstotliwością  $8$ ~kHz, natomiast standardem dla nagrań wysokiej jakości (szerokopasmowych) i nowoczesnych systemów ASR jest częstotliwość  $16$ ~kHz.
-    \item \textbf{Kwantyzacja (ang. \textit{quantization}):} Polega na odwzorowaniu ciągłych, rzeczywistych wartości amplitudy fali na skończoną reprezentację całkowitoliczbową. W standardzie liniowym PCM najczęściej stosuje się zapis 16-bitowy (zakres od  $-32768$  do  $32767$ ). Niekiedy stosuje się kompresję nieliniową (np. standard  $\mu$ -law), która odwzorowuje nieliniową, zbliżoną do logarytmicznej czułość ludzkiego słuchu na małe natężenia dźwięku.
+    \item \textbf{Kwantyzacja (ang. \textit{quantization}):} Polega na odwzorowaniu ciągłych, rzeczywistych wartości amplitudy fali na skończoną reprezentację całkowitoliczbową. W standardzie liniowym PCM najczęściej stosuje się zapis 16-bitowy (zakres od  $-32768$  do  $32767$ ). Niekiedy stosuje się kompresję nieliniową (np. standard  $mu$ -law), która odwzorowuje nieliniową, zbliżoną do logarytmicznej czułość ludzkiego słuchu na małe natężenia dźwięku.
 \end{itemize}
 
 Sygnał mowy jest niestacjonarny -- jego właściwości statystyczne stale zmieniają się w czasie \cite[s.~349]{jurafsky2026}. Aby móc poddać go analizie matematycznej, stosuje się proces \textbf{okienkowania} (ang. \textit{windowing}), czyli podziału sygnału na krótkie, nakładające się na siebie segmenty zwane \textbf{ramkami} (ang. \textit{frames}), wewnątrz których sygnał wykazuje właściwości w przybliżeniu stacjonarne \cite[s.~349]{jurafsky2026}. Typowy proces parametryzacji mowy wykorzystuje ramki o szerokości $25$~ms, przesuwane o krok (ang. \textit{stride}) równy $10$~ms \cite[s.~350]{jurafsky2026}. Aby zapobiec zniekształceniom widmowym (ang. \textit{spectral leakage}) wywołanym nagłym ucięciem fali na granicach ramki, sygnał w każdej ramce jest mnożony przez funkcję okna wygładzającego, najczęściej \textbf{okno Hamminga} \cite[s.~350]{jurafsky2026}:
@@ -88,7 +88,7 @@ W klasycznym paradygmacie ASR oraz systemach hybrydowych kolejnym etapem przetwa
     c[n] = \sum_{k=0}^{N-1} \log(|X[k]|) e^{j \frac{2\pi}{N} kn}
 \end{equation}
 
-W praktycznym wyznaczaniu współczynników MFCC zamiast pełnej IDFT stosuje się często Dyskretną Transformatę Kosinusową (DCT) zaaplikowaną do logarytmu wyjść z banku filtrów Mel. Pozwala to na uzyskanie wartości rzeczywistych oraz nieskorelowanych cech akustycznych, co znacząco ułatwiało ich dalsze modelowanie statystyczne w klasycznych algorytmach GMM \cite[s.~354]{jurafsky2026}. Dla potrzeb rozpoznawania mowy odcina się tylko pierwszych 12 współczynników cepstru, które reprezentują wolnozmienną obwiednię widmową traktu głosowego \cite[s.~354]{jurafsky2026}. Kompletny, klasyczny wektor cech MFCC jest \textbf{39-wymiarowy} i składa się z \cite[s.\~352]{jurafsky2026}:
+W praktycznym wyznaczaniu współczynników MFCC zamiast pełnej IDFT stosuje się często Dyskretną Transformatę Kosinusową (DCT) zaaplikowaną do logarytmu wyjść z banku filtrów Mel. Pozwala to na uzyskanie wartości rzeczywistych oraz nieskorelowanych cech akustycznych, co znacząco ułatwiało ich dalsze modelowanie statystyczne w klasycznych algorytmach GMM \cite[s.~354]{jurafsky2026}. Dla potrzeb rozpoznawania mowy odcina się tylko pierwszych 12 współczynników cepstru, które reprezentują wolnozmienną obwiednię widmową traktu głosowego \cite[s.~354]{jurafsky2026}. Kompletny, klasyczny wektor cech MFCC jest \textbf{39-wymiarowy} i składa się z \cite[s.~352]{jurafsky2026}:
 \begin{enumerate}
     \item 12 statycznych współczynników cepstralnych (reprezentujących obwiednię widmową traktu głosowego),
     \item 1 statycznego współczynnika energii całkowitej ramki,
@@ -99,7 +99,7 @@ W praktycznym wyznaczaniu współczynników MFCC zamiast pełnej IDFT stosuje si
 \end{enumerate}
 
 \subsubsection{Probabilistyczny model klasyczny: Noisy Channel Model}
-W konwencjonalnym (statystycznym) paradygmacie ASR proces rozpoznawania mowy opiera się na strukturze modułowej, w której zadanie transkrypcji dekomponuje się na trzy niezależne komponenty: Model Akustyczny (AM), Model Językowy (LM) oraz Model Wymowy (PM / Leksykon) \cite[s.~315]{pondel2024e2e}. Architektura ta wykorzystuje metaforę kanału ze współczynnikiem zakłóceń (ang. \textit{Noisy Channel Model}) i traktuje sygnał akustyczny jako zakłóconą wersję sekwencji słów \cite[s.~290]{columbia_asr}. Matematycznie cel dekodowania polega na wyznaczeniu najbardziej prawdopodobnej sekwencji słów $\hat{W} = (w_1, w_2, \dots, w_n)$ dla danego ciągu wektorów obserwacji akustycznych $O = (o_1, o_2, \dots, o_t)$ \cite[s.~291]{columbia_asr}:
+W konwencjonalnym (statystycznym) paradygmacie ASR proces rozpoznawania mowy opiera się na strukturze modułowej, w której zadanie transkrypcji dekomponuje się na trzy niezależne komponenty: Model Akustyczny (AM), Model Językowy (LM) oraz Model Wymowy (PM / Leksykon) \cite[s.~315]{pondel2024e2e}. Architektura ta wykorzystuje metaforę kanału ze współczynnikiem zakłóceń (ang. \textit{Noisy Channel Model}) i traktuje sygnał akustyczny jako zakłóconą wersję sekwencji słów \cite[s.~290]{columbia_asr}. Matematycznie cel dekodowania polega na wyznaczeniu najbardziej prawdopodobnej sekwencji słów $hat{W} = (w_1, w_2, \dots, w_n)$ dla danego ciągu wektorów obserwacji akustycznych $O = (o_1, o_2, \dots, o_t)$ \cite[s.~291]{columbia_asr}:
 \begin{equation}
     \hat{W} = \arg\max_{W} P(W|O)
 \end{equation}
@@ -115,14 +115,30 @@ Mianownik $P(O)$ reprezentuje prawdopodobieństwo aprioryczne sygnału i jako st
 
 %     Co opisać:
 %         Ukryte Modele Markowa (HMM): Wyjaśnij ich działanie jako modelu statystycznego opartego na stanach ukrytych i zmiennych obserwowanych.
+
 %         Głębokie sieci neuronowe (DNN, RNN, CNN): Opisz, jak sieci rekurencyjne (RNN/LSTM) radzą sobie z danymi sekwencyjnymi, a sieci splotowe (CNN) analizują spektrogramy audio.
+
 %         Koncepcja CTC (Connectionist Temporal Classification): Kluczowy algorytm, który umożliwił dopasowanie czasowe nagrania do tekstu bez konieczności ręcznego podziału na fonemy.
+
 %         Transformer i Conformer (Self-Attention): Wyjaśnij, dlaczego mechanizm samo-uwagi zrewolucjonizował dziedzinę, pozwalając na jednoczesną analizę kontekstu lokalnego (sąsiednich dźwięków) oraz globalnego (całego zdania).
+
 %         Weak Supervision i Self-Supervised Learning (Whisper, wav2vec): Opisz uczenie bez nadzoru na ogromnych zbiorach danych (np. wav2vec 2.0 uczony na surowym audio) oraz koncepcję modelu Whisper opartego na słabym nadzorze na wielką skalę (680 tys. godzin nagrań).
+
 %     Gdzie dokładnie czytać w Twoich źródłach:
 %         Artykuł Pondel-Sycz i in.: Sekcja II.B „End-To-End ASR” [543–546] wprost omawia i porównuje działanie RNN, CNN oraz Transformerów w mowie. Dodatkowo sekcja III.B szczegółowo opisuje architektury konkretnych modeli: QuartzNet, FastConformer, Wav2Vec 2.0 i Whisper [551–556].
 %         Artykuł Ferraro i in. (Benchmarking): Sekcja 2.1 „Open Source” (strony z opisami modeli Conformer, HuBERT, SpeechBrain, WhisperX) [472–479].
 %         Rozprawa doktorska Mikołaja Pudo: Rozdział 2.3 oraz 6 na temat Semi-Supervised Learning (SSL). Rysunek 4 na stronie 26 przedstawia genialny, czytelny schemat różnic między uczeniem nienadzorowanym, częściowo nadzorowanym (SSL) a samo-nadzorowanym.
+
+\subsubsection{Statystyczne modele sekwencyjne: Ukryte Modele Markowa (HMM)}
+W klasycznym paradygmacie rozpoznawania mowy podstawowym narzędziem do modelowania zmienności czasowej i akustycznej sygnału są Ukryte Modele Markowa (ang. \textit{Hidden Markov Models}, HMM) \cite{rabiner1989tutorial}. HMM jest podwójnie stochastycznym procesem kaskadowym: podstawowy proces stanów ukrytych $Q = (q_1, q_2, \dots, q_T)$ nie jest bezpośrednio obserwowalny, a o jego przebiegu wnioskuje się jedynie na podstawie wtórnego ciągu obserwacji $O = (o_1, o_2, \dots, o_T)$, reprezentujących np. wektory cech MFCC \cite[s.~257, 259]{rabiner1989tutorial}. Struktura matematyczna HMM zdefiniowana jest przez trójkę parametrów $lambda = (A, B, \pi)$ \cite[s.~261]{rabiner1989tutorial}: \begin{itemize} \item $A = \{a_{ij}\}$ -- macierz prawdopodobieństw przejść między stanami, gdzie $a_{ij} = P(q_{t+1} = S_j \mid q_t = S_i)$ \cite[s.~260]{rabiner1989tutorial}, \item $B = \{b_j(o_t)\}$ -- rozkład prawdopodobieństwa emisji symbolu/wektora obserwacji $o_t$ w stanie $S_j$ \cite[s.~261]{rabiner1989tutorial}, \item $pi = \{\pi_i\}$ -- początkowy rozkład stanów, gdzie $pi_i = P(q_1 = S_i)$ \cite[s.~261]{rabiner1989tutorial}. \end{itemize} Dla potrzeb mowy stosuje się najczęściej modele typu \textit{left-right} (tzw. model Bakisa), w których przejścia stanów dozwolone są wyłącznie w kierunku upływu czasu ($a_{ij} = 0$ dla $j < i$), co naturalnie odzwierciedla ciągły i nieodwracalny charakter sygnału mowy 
+
+\cite[s.~266]{rabiner1989tutorial}. Praktyczne zastosowanie HMM w ASR wymaga rozwiązania trzech kluczowych problemów obliczeniowych \cite[s.~261]{rabiner1989tutorial}: \begin{enumerate} \item \textbf{Ewaluacja (ocena wiarygodności):} Wyznaczenie prawdopodobieństwa wygenerowania obserwacji $P(O \mid \lambda)$ przez dany model. Rozwiązaniem optymalnym obliczeniowo jest 
+    
+algorytm wprzód-wszerz (ang. \textit{Forward-Backward Algorithm}), redukujący złożoność z wykładniczej do $\mathcal{O}(N^2 T)$ \cite[s.~261--262]{rabiner1989tutorial}. \item \textbf{Dekodowanie (poszukiwanie ścieżki):} 
+
+Wyznaczenie najbardziej prawdopodobnej sekwencji stanów ukrytych $Q^*$, która najlepiej wyjaśnia ciąg obserwacji $O$. Problem ten rozwiązuje algorytm Viterbiego,
+
+oparty na programowaniu dynamicznym \cite[s.~261, 264]{rabiner1989tutorial}: \begin{equation} \delta_t(j) = \max_{1 \le i \le N} \left[ \delta_{t-1}(i) a_{ij} \right] \cdot b_j(o_t) \end{equation} \item \textbf{Uczenie (reestymacja parametrów):} Dostosowanie parametrów $lambda = (A, B, \pi)$ w celu maksymalizacji wiarygodności $P(O \mid \lambda)$ na podstawie danych treningowych. Algorytm Bauma-Welcha (będący wariantem algorytmu EM) iteracyjnie optymalizuje parametry modelu aż do osiągnięcia lokalnego ekstremum \cite[s.~261, 264--265]{rabiner1989tutorial}. \end{enumerate}
 
 \subsection{Standardy i protokoły wykorzystywane w systemach STT}
 
