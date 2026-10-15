@@ -68,7 +68,6 @@ Sygnał mowy jest niestacjonarny -- jego właściwości statystyczne stale zmien
 \end{equation}
 
 gdzie $s[n]$ to dyskretny sygnał wejściowy, a $N$ oznacza liczbę próbek w ramce \cite[s.~350]{jurafsky2026}.
-% TODO: tu i uwdzie trzebaby dodać cytowania
 
 Dla każdej wygładzonej ramki obliczana jest \textbf{Dyskretna Transformata Fouriera} (DFT -- \textit{Discrete Fourier Transform}), zazwyczaj realizowana za pomocą szybkiego algorytmu FFT (\textit{Fast Fourier Transform}):
 \begin{equation}
@@ -113,10 +112,8 @@ Mianownik $P(O)$ reprezentuje prawdopodobieństwo aprioryczne sygnału i jako st
 \subsection{Metody uczenia modeli STT (HMM, DNN, Transformer, Whisper)}
 % To techniczne jądro teorii, prezentujące matematyczne i architektoniczne fundamenty uczenia modeli rozpoznawania mowy.
 
-%     Co opisać:
-%         Ukryte Modele Markowa (HMM): Wyjaśnij ich działanie jako modelu statystycznego opartego na stanach ukrytych i zmiennych obserwowanych.
-
-%         Głębokie sieci neuronowe (DNN, RNN, CNN): Opisz, jak sieci rekurencyjne (RNN/LSTM) radzą sobie z danymi sekwencyjnymi, a sieci splotowe (CNN) analizują spektrogramy audio.
+%         Głębokie sieci neuronowe (DNN, RNN, CNN): 
+% Opisz, jak sieci rekurencyjne (RNN/LSTM) radzą sobie z danymi sekwencyjnymi, a sieci splotowe (CNN) analizują spektrogramy audio.
 
 %         Koncepcja CTC (Connectionist Temporal Classification): Kluczowy algorytm, który umożliwił dopasowanie czasowe nagrania do tekstu bez konieczności ręcznego podziału na fonemy.
 
@@ -137,6 +134,22 @@ W klasycznym paradygmacie rozpoznawania mowy podstawowym narzędziem do modelowa
 
 \end{itemize} Dla potrzeb mowy stosuje się najczęściej modele typu \textit{left-right} (tzw. model Bakisa), w których przejścia stanów dozwolone są wyłącznie w kierunku upływu czasu ($a_{ij} = 0$ dla $j < i$), co naturalnie odzwierciedla ciągły i nieodwracalny charakter sygnału mowy \cite[s.~266]{rabiner1989tutorial}. Praktyczne zastosowanie HMM w ASR wymaga rozwiązania trzech kluczowych problemów obliczeniowych \cite[s.~261]{rabiner1989tutorial}: \begin{enumerate} \item \textbf{Ewaluacja (ocena wiarygodności):} Wyznaczenie prawdopodobieństwa wygenerowania obserwacji $P(O \mid \lambda)$ przez dany model. Rozwiązaniem optymalnym obliczeniowo jest
 algorytm wprzód-wszerz (ang. \textit{Forward-Backward Algorithm}), redukujący złożoność z wykładniczej do $\mathcal{O}(N^2 T)$ \cite[s.~261--262]{rabiner1989tutorial}. \item \textbf{Dekodowanie (poszukiwanie ścieżki):} Wyznaczenie najbardziej prawdopodobnej sekwencji stanów ukrytych $Q^*$, która najlepiej wyjaśnia ciąg obserwacji $O$. Problem ten rozwiązuje algorytm Viterbiego, oparty na programowaniu dynamicznym \cite[s.~261, 264]{rabiner1989tutorial}: \begin{equation} \delta_t(j) = \max_{1 \le i \le N} \left[ \delta_{t-1}(i) a_{ij} \right] \cdot b_j(o_t) \end{equation} \item \textbf{Uczenie (reestymacja parametrów):} Dostosowanie parametrów $lambda = (A, B, \pi)$ w celu maksymalizacji wiarygodności $P(O \mid \lambda)$ na podstawie danych treningowych. Algorytm Bauma-Welcha (będący wariantem algorytmu EM) iteracyjnie optymalizuje parametry modelu aż do osiągnięcia lokalnego ekstremum \cite[s.~261, 264--265]{rabiner1989tutorial}. \end{enumerate}
+
+\subsubsection{Architektura głęboka w ASR: hybrydy HMM-DNN, sieci RNN/LSTM i CNN} Wraz z rozwojem mocy obliczeniowej oraz dostępnością dużych zbiorów danych nastąpiło przejście od klasycznych modeli statystycznych do głębokich sieci neuronowych (ang. \textit{Deep Neural Networks}, DNN). Pierwszym krokiem ewolucyjnym było zastąpienie mieszanin rozkładów Gaussa (GMM) przez sieci DNN w modelowaniu prawdopodobieństw emisji, co dało początek systemom hybrydowym HMM-DNN \cite[s.~20]{pudo2024optimizing}. W tej konfiguracji sieć neuronowa klasyfikuje ramki akustyczne, wyznaczając prawdopodobieństwa a posteriori stanów $P(q_t \mid o_t)$, które następnie – za pomocą reguły Bayesa (poprzez dzielenie przez prawdopodobieństwa aprioryczne stanów) – przekształca się na prawdopodobieństwa emisji $b_j(o_t)$ wykorzystywane przez model HMM \cite[s.~1, 1765]{graves2014towards}. Choć systemy hybrydowe HMM-DNN znacząco poprawiły dokładność transkrypcji, nadal wymagały zewnętrznego wyrównywania nagrań do etykiet (\textit{forced alignment}) oraz niezależnego trenowania poszczególnych modułów \cite[s.~316]{pondel2024e2e}. Przełomem w kierunku modeli zintegrowanych End-to-End (E2E) stało się zastosowanie sieci rekurencyjnych (ang. \textit{Recurrent Neural Networks}, RNN) oraz sieci o długiej pamięci krótkotrwałej (ang. \textit{Long Short-Term Memory}, LSTM) \cite[s.~316]{pondel2024e2e}. Dzięki wewnętrznemu stanowi ukrytemu $h_t$: \begin{equation} h_t = \tanh(W_{hx} x_t + W_{hh} h_{t-1} + b_h) \end{equation} sieci RNN/LSTM uzyskały zdolność do modelowania sekwencyjnego i utrzymywania kontekstu czasowego wzdłuż sygnału audio \cite[s.~1--3]{graves2014towards}.
+
+
+Model dwukierunkowy (BiLSTM) pozwolił dodatkowo na jednoczesną analizę kontekstu przyszłego i przeszłego dla każdej ramki akustycznej dzięki połączeniu stanów ukrytych z przebiegu w przód i w tył \cite[s.~2--3]{graves2014towards}, \cite[s.~313--314]{jurafsky2026}. Głównym ograniczeniem architektury RNN pozostała jednak niemożność pełnego zrównoleglenia obliczeń ze względu na sekwencyjny charakter zależności czasowych $h_{t-1} \to h_t$ \cite[s.~304--305]{jurafsky2026}, co przekładało się na niższą efektywność uczenia w porównaniu do architektur splotowych i atencyjnych \cite[s.~172]{jurafsky2026}, \cite[s.~5036]{gulati2020conformer}.
+
+Alternatywą eliminującą to ograniczenie stały się splotowe sieci neuronowe (ang. \textit{Convolutional Neural Networks}, CNN) \cite[s.~360--363]{jurafsky2026}, \cite[s.~5036]{gulati2020conformer}. Zastosowanie jednowymiarowych splotów czasowych (1D CNN) z rozszerzoną aprecjacją (ang. \textit{dilated convolutions}) lub głębokich kaskad splotowych (czego klasycznym przykładem jest architektura QuartzNet) pozwoliło na efektywną ekstrakcję cech lokalnych ze spektrogramów Log-Mel przy zachowaniu pełnej równoległości przetwarzania \cite[s.~360--363]{jurafsky2026}, \cite[s.~5036, 5039]{gulati2020conformer}.
+
+
+
+
+
+
+
+
+
 
 \subsection{Standardy i protokoły wykorzystywane w systemach STT}
 
