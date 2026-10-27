@@ -112,8 +112,6 @@ Mianownik $P(O)$ reprezentuje prawdopodobieństwo aprioryczne sygnału i jako st
 \subsection{Metody uczenia modeli STT (HMM, DNN, Transformer, Whisper)}
 % To techniczne jądro teorii, prezentujące matematyczne i architektoniczne fundamenty uczenia modeli rozpoznawania mowy.
 
-%         Transformer i Conformer (Self-Attention): Wyjaśnij, dlaczego mechanizm samo-uwagi zrewolucjonizował dziedzinę, pozwalając na jednoczesną analizę kontekstu lokalnego (sąsiednich dźwięków) oraz globalnego (całego zdania).
-
 %         Weak Supervision i Self-Supervised Learning (Whisper, wav2vec): Opisz uczenie bez nadzoru na ogromnych zbiorach danych (np. wav2vec 2.0 uczony na surowym audio) oraz koncepcję modelu Whisper opartego na słabym nadzorze na wielką skalę (680 tys. godzin nagrań).
 
 %     Gdzie dokładnie czytać w Twoich źródłach:
@@ -144,7 +142,7 @@ Dla danej sekwencji wejściowej $X$ sieć neuronowa na każdym kroku czasowym $t
     P(\pi|X) = \prod_{t=1}^{T} P(\pi_t | X).
 \end{equation}
 Ponieważ wiele różnych ścieżek $\pi$ po przejściu przez funkcję redukującą $\mathcal{B}$ daje ten sam ciąg docelowy $Y$ (np. ścieżki $(p, p, \epsilon, a, a)$ oraz $(p, \epsilon, \epsilon, a, \epsilon)$ dają wynik $(p, a)$), całkowite prawdopodobieństwo właściwej transkrypcji $Y$ oblicza się jako sumę prawdopodobieństw wszystkich poprawnych ścieżek należących do praobrazu $\mathcal{B}^{-1}(Y)$ \cite[s.~2]{graves2006ctc}:
-\begin{equation}_
+\begin{equation}
     P(Y|X) = \sum_{\pi \in \mathcal{B}^{-1}(Y)} P(\pi|X).
 \end{equation}
 Proces uczenia sieci polega na minimalizacji funkcji straty CTC ($\mathcal{L}_{\text{CTC}}$), definiowanej jako ujemny logarytm wiarygodności prawidłowej sekwencji etykiet $Y^*$ \cite[s.~376]{jurafsky2026}:
@@ -165,6 +163,32 @@ Rozwiązaniem tego problemu stała się architektura \textbf{Transformer}, zapro
 \end{align}
 
 gdzie $\text{FFN}$ oznacza moduł przeliczający, $\text{MHSA}$ to moduł wielogłowicowej samo-uwagi z względnym kodowaniem pozycyjnym (ang. \textit{Relative Positional Encodings}), a $\text{Conv}$ to moduł splotowy wykorzystujący m.in. jednowymiarową splot głęboką (ang. \textit{1D Depthwise Convolution}) oraz aktywację Swish i GLU \cite[s.~2]{gulati2020conformer}. Możliwość \textbf{jednoczesnej analizy kontekstu lokalnego (akustycznego) oraz globalnego (semantycznego)} ma fundamentalne znaczenie dla języka polskiego \cite[s.~315--316]{pondel2024e2e}. Polszczyzna jest językiem fleksyjnym o swobodnym szyku zdań, co oznacza, że poprawne rozpoznanie wyrazu wymaga nie tylko dokładnej analizy lokalnych głosek i końcówek fleksyjnych, ale także uwzględnienia odległych zależności składniowych w zdaniu \cite[s.~315--316]{pondel2024e2e}. Z tego powodu nowoczesne architektury hybrydowe, takie jak FastConformer czy OpenAI Whisper (wykorzystujące bloki splotowe oraz Transformera), stanowią obecnie najwyższy poziom rozwoju technologicznego (ang. \textit{state-of-the-art}) w automatycznym rozpoznawaniu mowy \cite[s.~1]{radford2023robust}, \cite[s.~316]{pondel2024e2e}.
+
+
+
+
+\subsubsection{Uczenie samo-nadzorowane oraz słabo nadzorowane na dużą skalę: wav2vec 2.0 i OpenAI Whisper}
+\label{subsubsec:ssl_weak_supervision}
+
+Paradygmaty uczenia modeli automatycznego rozpoznawania mowy przeszły w ostatnich latach istotną ewolucję. Klasyczne podejścia nadzorowane wymagały ogromnych nakładów pracy przy przygotowywaniu dokładnego wyrównania czasowego nagrań i ich transkrypcji (ang. \textit{forced alignment}). Ograniczona dostępność wysokiej jakości ręcznie adnotowanych korpusów stanowiła bariery rozwojowe, szczególnie dla języków o mniejszych zasobach cyfrowych. Przełomem w przełamaniu tych ograniczeń stały się dwie koncepcje: \textbf{uczenie samo-nadzorowane} (ang. \textit{Self-Supervised Learning} -- SSL) oraz \textbf{słaby nadzór na wielką skalę} (ang. \textit{Large-Scale Weak Supervision}) \cite[s.~1]{baevski2020wav2vec}, \cite[s.~1]{radford2023robust}.
+
+\textbf{Uczenie samo-nadzorowane na surowym sygnale audio: wav2vec 2.0.} Koncepcja uczenia samo-nadzorowanego polega na wstępnym wytrenowaniu modelu na ogromnych zbiorach \textbf{nieetykietowanego sygnału audio} (ang. \textit{unlabeled audio}), a następnie jego dostrojeniu (ang. \textit{fine-tuning}) z wykorzystaniem zaledwie niewielkiej ilości danych transkrybowanych \cite[s.~1]{baevski2020wav2vec}. Wzorcowym przykładem tego paradygmatu jest architektura \textbf{wav2vec 2.0}, zaprezentowana przez Baevskiego i~in. z zespołu Meta AI \cite{baevski2020wav2vec}. Struktura modelu wav2vec 2.0 składa się z trzech głównych komponentów \cite[s.~2--3]{baevski2020wav2vec}, \cite[s.~370--371]{jurafsky2026}:
+\begin{enumerate}
+    \item \textbf{Splotowy ekstraktor cech (ang. \textit{Feature Encoder}):} Wielowarstwowa sieć splotowa 1D przetwarza surowy sygnał audio $X$ (o częstotliwości próbkowania 16~kHz) bezpośrednio na ciągłe reprezentacje ukryte $z_1, z_2, \dots, z_T$, eliminując potrzebę ręcznej ekstrakcji spektrogramów czy współczynników MFCC.
+    \item \textbf{Moduł kwantyzacji (ang. \textit{Quantization Module}):} Przekształca ciągłe wektory ukryte na dyskretne jednostki mowy $q_t$ za pomocą kwantyzacji wektorowej (ang. \textit{Product Quantization}) z wykorzystaniem różniczkowalnej funkcji \textit{Gumbel-Softmax}, tworząc uniwersalny słownik reprezentacji akustycznych (ang. \textit{codebook}).
+    \item \textbf{Sieć kontekstowa Transformer (ang. \textit{Context Network}):} Przyjmuje ciągłe reprezentacje z ekstraktora i buduje kontekstowe wektory reprezentacji $c_1, c_2, \dots, c_T$ z uwzględnieniem zależności w całej sekwencji.
+\end{enumerate}
+
+Uczenie wstępne w wav2vec 2.0 opiera się na rozwiązaniu \textbf{zadania kontrastywnego} (ang. \textit{contrastive task}), zainspirowanego zamaskowanym modelowaniem języka znanym z modelu BERT \cite[s.~2--3]{baevski2020wav2vec}, \cite[s.~370--371]{jurafsky2026}. Część wektorów w przestrzeni ukrytej zostaje zamaskowana, po czym sieć uczy się odróżniać poprawną, zdyskretyzowaną jednostkę $q_t$ od zestawu fałszywych reprezentacji (ang. \textit{distractors}) pobranych z innych fragmentów czasowych tego samego nagrania \cite[s.~3]{baevski2020wav2vec}. Po etapie pre-treningu model dostrajany jest do klasycznej funkcji celu (np. CTC). Jak wykazali autorzy, wav2vec 2.0 pozwala na osiągnięcie wysokiej dokładności rozpoznawania nawet przy użyciu zaledwie kilkunastu minut lub jednej godziny etykietowanych nagrań \cite[s.~1, 5]{baevski2020wav2vec}.
+
+\textbf{Słaby nadzór na wielką skalę} oraz \textbf{architektura wielozadaniowa: OpenAI Whisper.} Podejście zaprezentowane w modelu \textbf{Whisper} przez zespół OpenAI zrezygnowało z bezetykietowego pre-treningu SSL na rzecz uczenia w pełni nadzorowanego, lecz opartego na \textbf{słabym nadzorze na wielką skalę} \cite[s.~1--2]{radford2023robust}. Zamiast ograniczać się do czystych, ręcznie weryfikowanych zbiorów akademickich (np. LibriSpeech), zrezygnowano z rygorystycznej kontroli jakości na rzecz ekstremalnego zwiększenia wolumenu danych \cite[s.~1--2]{radford2023robust}. Zbiór treningowy modelu Whisper objął aż \textbf{680~000 godzin nagrań audio} pobranych z Internetu wraz z automatycznie wygenerowanymi lub niestandaryzowanymi transkrypcjami \cite[s.~1--3]{radford2023robust}:
+\begin{itemize}
+    \item 438~218 godzin jednojęzycznej transkrypcji mowy w języku angielskim,
+    \item 117~113 godzin wielojęzycznej transkrypcji mowy dla 96 różnych języków (w tym języka polskiego),
+    \item 125~739 godzin danych do tłumaczenia mowy z innych języków na język angielski ($X \rightarrow \text{English}$).
+\end{itemize}
+
+Architektura Whisper wykorzystuje klasyczny model sekwencja-do-sekwencji oparty na enkoderze i dekoderze Transformera (\textit{Encoder-Decoder Transformer}) \cite[s.~2--3]{radford2023robust}. Kluczowym elementem modelu jest jego \textbf{wielozadaniowy format treningowy} (ang. \textit{multitask training format}). Pojedyncza sieć realizuje jednocześnie zadania detekcji aktywności głosowej (VAD), identyfikacji języka, transkrypcji, tłumaczenia oraz generowania znaczników czasowych słów dzięki zastosowaniu w dekoderze sekwencji specjalnych tokenów sterujących (m.in. \texttt{\textless|startoftranscript|\textgreater}, \texttt{\textless|language|\textgreater}, \texttt{\textless|transcribe|\textgreater}, \texttt{\textless|translate|\textgreater}, \texttt{\textless|notimestamps|\textgreater}) \cite[s.~3--4]{radford2023robust}. Główną zaletą modelu Whisper jest jego uniwersalność i wyjątkowa odporność na zakłócenia w warunkach otwartych bez konieczności dostrajania do konkretnego zbioru testowego (ang. \textit{zero-shot transfer}) \cite[s.~1, 5--6]{radford2023robust}. Model charakteryzuje się wysoką stabilnością przy obecności hałasów tła, zróżnicowanych akcentów oraz mowy potocznej, osiągając wyniki zbliżone do dokładności ludzkich transkrybentów \cite[s.~10]{radford2023robust}.
 
 
 \subsection{Standardy i protokoły wykorzystywane w systemach STT}
