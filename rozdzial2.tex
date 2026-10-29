@@ -192,8 +192,6 @@ Projektowanie i implementacja nowoczesnych aplikacji wykorzystujących technolog
     \item \textbf{Przetwarzanie strumieniowe (ang. \textit{Real-time Streaming}):} Wymagane w interaktywnych interfejsach głosowych (VUI), gdzie tekst powinien pojawiać się na ekranie niemal symultanicznie w trakcie trwania wypowiedzi. Sygnał z mikrofonu jest dzielony po stronie klienta na małe bufory (ang. \textit{chunks}) i natychmiast przesyłany do serwera. Ze względu na wysoki narzut nagłówkowy klasycznego protokołu HTTP, w transmisji strumieniowej stosuje się dwukierunkowe, pełnodupleksowe protokoły o niskich opóźnieniach, takie jak \textbf{WebSocket} lub \textbf{gRPC} (oparty na HTTP/2 i serializacji \textit{Protocol Buffers}). Pozwala to na ciągłe zwracanie tzw. cząstkowych hipotez transkrypcji (ang. \textit{partial hypotheses}), które są na bieżąco korygowane przez model w miarę napływu kolejnych ramek sygnału \cite[s.~18]{pudo2024optimizing}.
 \end{itemize}
 
-% dotąd sprawdzone
-
 \subsubsection{Formaty, cyfryzacja i parametryzacja sygnału audio} Przed przekazaniem sygnału mowy do sieci neuronowej lub chmurowego API niezbędne jest zapewnienie odpowiednich parametrów cyfryzacji fali akustycznej. Niezgodność parametrów wejściowych z wymaganiami modelu akustycznego prowadzi do drastycznego spadku dokładności transkrypcji \cite[s.~349]{jurafsky2026}:
 
 \begin{enumerate}
