@@ -23,15 +23,23 @@ Hipoteza badawcza zakłada, że modele oparte na uczeniu głębokim, w szczegól
 
 \subsection{Metodyka badań i narzędzia}
 
-Badania porównawcze zostały przeprowadzone z wykorzystaniem autorskiej aplikacji webowej, która służyła jako ujednolicone środowisko testowe. System został zrealizowany w architekturze klient-serwer: \begin{itemize} \item \textbf{Frontend:} Napisany w bibliotece \textbf{React}, odpowiedzialny za interfejs użytkownika, obsługę importu przygotowanych wcześniej nagrań testowych oraz zarządzanie procesem wysyłania plików do analizy. \item \textbf{Backend:} Zrealizowany w frameworku \textbf{FastAPI (Python)}, pełniący rolę pośrednika (orchestratora) komunikującego się z poszczególnymi API chmurowymi oraz lokalnymi instancjami modeli. \end{itemize}
-
-\textbf{Proces badawczy i narzędzia analityczne:} Obliczenia metryk jakościowych zostały wykonane asynchronicznie po otrzymaniu wyników transkrypcji. Do wyznaczenia kluczowych wskaźników wykorzystano bibliotekę \textbf{jiwer}, która pozwoliła na precyzyjne obliczenie: \begin{itemize} \item \textbf{WER (Word Error Rate):} Główna metryka określająca odsetek błędnie rozpoznanych słów. \item \textbf{CER (Character Error Rate):} Metryka czuła na drobne błędy na poziomie znaków. \item \textbf{RTF (Real Time Factor):} Stosunek czasu transkrypcji do długości nagrania, służący do oceny wydajności modeli. \end{itemize}
-
+Badania porównawcze zostały przeprowadzone z wykorzystaniem autorskiej aplikacji webowej, która służyła jako ujednolicone środowisko testowe. System został zrealizowany w architekturze klient-serwer:
+\begin{itemize}
+\item \textbf{Frontend:} Napisany w bibliotece \textbf{React}, odpowiedzialny za interfejs użytkownika, obsługę importu przygotowanych wcześniej nagrań testowych oraz zarządzanie procesem wysyłania plików do analizy.
+\item \textbf{Backend:} Zrealizowany w frameworku \textbf{FastAPI (Python)}, pełniący rolę pośrednika (orchestratora) komunikującego się z poszczególnymi API chmurowymi oraz lokalnymi instancjami modeli.
+\end{itemize}
+\textbf{Proces badawczy i narzędzia analityczne:} Obliczenia metryk jakościowych zostały wykonane asynchronicznie po otrzymaniu wyników transkrypcji. Do wyznaczenia kluczowych wskaźników wykorzystano bibliotekę \textbf{jiwer}, która pozwoliła na precyzyjne obliczenie:
+\begin{itemize}
+\item \textbf{WER (Word Error Rate):} Główna metryka określająca odsetek błędnie rozpoznanych słów.
+\item \textbf{CER (Character Error Rate):} Metryka czuła na drobne błędy na poziomie znaków.
+\item \textbf{RTF (Real Time Factor):} Stosunek czasu transkrypcji do długości nagrania, służący do oceny wydajności modeli.
+\end{itemize}
 Dane wynikowe były eksportowane do formatu \textbf{CSV}, a następnie agregowane w arkuszu kalkulacyjnym, co pozwoliło na wykonanie analizy statystycznej, obliczenie średnich wyników dla poszczególnych prób oraz wygenerowanie wykresów porównawczych.
 
 \textbf{Zbiór danych testowych:} Eksperyment przeprowadzono na grupie 10 uczestników, z których każdy przygotował 6 nagrań o zróżnicowanej charakterystyce fonetycznej i semantycznej. Łączny zbiór danych objął około 300 transkrypcji dla języka polskiego, podzielonych na kategorie takie jak: teksty proste, trudne (łamańce językowe), wypowiedzi luźne, dane liczbowe oraz nagrania w warunkach kontrolowanego hałasu.
 
-\subsection{Struktura pracy - do rewizji na koniec} % TODO
+\subsection{Struktura pracy - do rewizji na koniec}
+% TODO
 
 % [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE] [PRZECZYTANE]
 
