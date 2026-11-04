@@ -84,8 +84,91 @@ OpenAI Whisper to wielozadaniowy, otwarty system automatycznego rozpoznawania mo
 Model finansowy chmurowego API OpenAI opiera się na rozliczeniu per-skorzystanie za rzeczywisty czas nagrania audio (np. $0{,}0045$\,\$/min dla modelu \texttt{gpt-transcribe} oraz $0{,}006$\,\$/min dla \texttt{whisper-1}) bez stałych opłat abonamentowych \cite{openai_pricing}. Wśród funkcji wspomagających precyzję transkrypcji OpenAI API udostępnia opcję podawania kontekstu słownikowego poprzez parametr \texttt{prompt} (ograniczony w modelu Whisper do 224 tokenów) lub dedykowane parametry \texttt{keywords} oraz \texttt{languages}, które pozwalają na przekazywanie do modelu listy oczekiwanych słów kluczowych i skrótów branżowych \cite{openai_file_transcription}.
 
 \subsection{Web Speech API (przeglądarkowe)}
-Web Speech API to oficjalna specyfikacja organizacji W3C, dostarczająca natywny interfejs programistyczny do obsługi rozpoznawania mowy (\texttt{SpeechRecognition}) oraz syntezy mowy (\texttt{SpeechSynthesis}) bezpośrednio z poziomu przeglądarki internetowej po stronie klienta \cite{mdnWebSpeechAPI}. Interfejs rozpoznawania mowy bazuje na przechwytywaniu strumienia audio z mikrofonu użytkownika lub ścieżki dźwiękowej i zwracaniu zestawu dopasowanych hipotez tekstowych \cite{mdnWebSpeechAPI}. Architektura Web Speech API opiera się na kontrolerze \texttt{SpeechRecognition}, który udostępnia szereg kluczowych właściwości konfiguracyjnych i zdarzeń programistycznych \cite{mdnWebSpeechAPI}: \begin{itemize} \item \textbf{Tryby pracy i wyniki pośrednie:} Właściwość \texttt{continuous} określa, czy rozpoznawanie przebiega w trybie ciągłym, czy zatrzymuje się po wykryciu pojedynczej frazy, natomiast \texttt{interimResults} pozwala na odbieranie wstępnych hipotez w trakcie trwania wypowiedzi \cite{mdnWebSpeechAPI}. \item \textbf{Konfiguracja językowa i warianty:} Parametr \texttt{lang} definiuje kod językowy (np. \texttt{pl-PL}), zaś \texttt{maxAlternatives} określa liczbę zwracanych alternatywnych wariantów transkrypcji wraz ze wskaźnikami pewności (\textit{confidence}) \cite{mdnWebSpeechAPI}. \item \textbf{Obsługa zdarzeń (\textit{Event Handlers}):} Reakcja na strumień danych realizowana jest poprzez dedykowane zdarzenia, w tym \texttt{onresult} (przekazujące obiekt \texttt{SpeechRecognitionEvent} zawierający strukturę \texttt{SpeechRecognitionResultList}), \texttt{onspeechend}, \texttt{onnomatch} oraz \texttt{onerror} \cite{mdnWebSpeechAPI}. \item \textbf{Kontekstowe wzmacnianie fraz (\textit{Contextual Biasing}):} Specyfikacja udostępnia tablicę obiektów \texttt{SpeechRecognitionPhrase} przypisywaną do właściwości \texttt{phrases}, co pozwala na nadawanie wag (\textit{boost}) określonym słowom kluczowym i podnoszenie dokładności ich rozpoznawania \cite{mdnWebSpeechAPI}. \end{itemize} Domyślnie większość współczesnych przeglądarek (m.in. Google Chrome) realizuje proces rozpoznawania mowy poprzez przesyłanie zarejestrowanego dźwięku do zewnętrznych serwerów chmurowych producenta przeglądarki lub wykorzystuje systemowe silniki dyktowania systemu operacyjnego. Aby rozwiązać problemy związane z poufnością danych oraz brakiem dostępu do sieci, nowsze rozszerzenia API wprowadzają możliwość przetwarzania lokalnego (\textit{on-device}) poprzez ustawienie flagi \texttt{processLocally = true} \cite{mdnWebSpeechAPI}. Wykorzystanie tego trybu wymaga weryfikacji dostępności pakietu językowego na urządzeniu za pomocą metody statycznej \texttt{SpeechRecognition.available()} oraz jego ewentualnego pobrania metodą \texttt{SpeechRecognition.install()} dla wymaganego poziomu jakości (np. \texttt{dictation}). Głównymi zaletami Web Speech API są całkowity brak opłat finansowych dla dewelopera, brak konieczności budowania backendowej infrastruktury serwerowej oraz natywna integracja ze środowiskiem przeglądarki \cite{mdnWebSpeechAPI}. Do istotnych ograniczeń należą jednak niejednolite wsparcie między różnymi przeglądarkami (wymagające stosowania przedrostków, np. \texttt{webkitSpeechRecognition}), uzależnienie jakości od polityki dostawcy przeglądarki oraz brak bezpośredniego wpływu programisty na architekturę i parametry użytego pod spodem modelu ASR \cite{mdnWebSpeechAPI}.
-\subsection{Porównanie dostępnych narzędzi:}
+Web Speech API to oficjalna specyfikacja organizacji W3C, dostarczająca natywny interfejs programistyczny do obsługi rozpoznawania mowy (\texttt{SpeechRecognition}) oraz syntezy mowy (\texttt{SpeechSynthesis}) bezpośrednio z poziomu przeglądarki internetowej po stronie klienta. Interfejs rozpoznawania mowy bazuje na przechwytywaniu strumienia audio z mikrofonu użytkownika lub ścieżki dźwiękowej i zwracaniu zestawu dopasowanych hipotez tekstowych. Architektura Web Speech API opiera się na kontrolerze \texttt{SpeechRecognition}, który udostępnia szereg kluczowych właściwości konfiguracyjnych i zdarzeń programistycznych \cite{mdnWebSpeechAPI}:
+\begin{itemize}
+    \item \textbf{Tryby pracy i wyniki pośrednie:} Właściwość \texttt{continuous} określa, czy rozpoznawanie przebiega w trybie ciągłym, czy zatrzymuje się po wykryciu pojedynczej frazy, natomiast \texttt{interimResults} pozwala na odbieranie wstępnych hipotez w trakcie trwania wypowiedzi \cite{mdnWebSpeechAPI}.
+    \item \textbf{Konfiguracja językowa i warianty:} Parametr \texttt{lang} definiuje kod językowy (np. \texttt{pl-PL}), zaś \texttt{maxAlternatives} określa liczbę zwracanych alternatywnych wariantów transkrypcji wraz ze wskaźnikami pewności (\textit{confidence}) \cite{mdnWebSpeechAPI}. \item \textbf{Obsługa zdarzeń (\textit{Event Handlers}):} Reakcja na strumień danych realizowana jest poprzez dedykowane zdarzenia, w tym \texttt{onresult} (przekazujące obiekt \texttt{SpeechRecognitionEvent} zawierający strukturę \texttt{SpeechRecognitionResultList}), \texttt{onspeechend}, \texttt{onnomatch} oraz \texttt{onerror} \cite{mdnWebSpeechAPI}.
+    \item \textbf{Kontekstowe wzmacnianie fraz (\textit{Contextual Biasing}):} Specyfikacja udostępnia tablicę obiektów \texttt{SpeechRecognitionPhrase} przypisywaną do właściwości \texttt{phrases}, co pozwala na nadawanie wag (\textit{boost}) określonym słowom kluczowym i podnoszenie dokładności ich rozpoznawania \cite{mdnWebSpeechAPI}.
+\end{itemize}
+Domyślnie większość współczesnych przeglądarek (m.in. Google Chrome) realizuje proces rozpoznawania mowy poprzez przesyłanie zarejestrowanego dźwięku do zewnętrznych serwerów chmurowych producenta przeglądarki lub wykorzystuje systemowe silniki dyktowania systemu operacyjnego. Aby rozwiązać problemy związane z poufnością danych oraz brakiem dostępu do sieci, nowsze rozszerzenia API wprowadzają możliwość przetwarzania lokalnego (\textit{on-device}) poprzez ustawienie flagi \texttt{processLocally = true}. Wykorzystanie tego trybu wymaga weryfikacji dostępności pakietu językowego na urządzeniu za pomocą metody statycznej \texttt{SpeechRecognition.available()} oraz jego ewentualnego pobrania metodą \texttt{SpeechRecognition.install()} dla wymaganego poziomu jakości (np. \texttt{dictation}). Głównymi zaletami Web Speech API są całkowity brak opłat finansowych dla dewelopera, brak konieczności budowania backendowej infrastruktury serwerowej oraz natywna integracja ze środowiskiem przeglądarki. Do istotnych ograniczeń należą jednak niejednolite wsparcie między różnymi przeglądarkami (wymagające stosowania przedrostków, np. \texttt{webkitSpeechRecognition}), uzależnienie jakości od polityki dostawcy przeglądarki oraz brak bezpośredniego wpływu programisty na architekturę i parametry użytego pod spodem modelu ASR \cite{mdnWebSpeechAPI}.
+
+\subsection{Porównanie dostępnych narzędzi Speech-to-Text}
+\label{subsec:asr_comparison}
+
+Przedstawiony w poprzednich podrozdziałach przegląd komercyjnych usług chmurowych, autonomicznych modeli głębokich oraz natywnych API przeglądarkowych wskazuje na znaczące różnice w ich architekturze, modelu biznesowym i przeznaczeniu aplikacyjnym. Poniżej przeprowadzono szczegółową analizę porównawczą w rozbiciu na sześć kluczowych wymiarów inżynieryjnych i użytkowych.
+
+\subsubsection{Dokładność transkrypcji}
+Jakość rozpoznawania mowy, mierzona wyrazową stopą błędów (ang. \textit{Word Error Rate} -- WER), jest silnie uzależniona od domeny tekstu, cech akcentowych mówców oraz obecności zakłóceń w sygnale audio. Komercyjne usługi chmurowe (Google Speech-to-Text, Azure Speech, Amazon Transcribe) charakteryzują się stabilną dokładnością w typowych warunkach laboratoryjnych i biznesowych \cite[s.~6--7]{ferraro2023benchmarking}. Z kolei modele głębokie oparte na wielkoskalowym słabym nadzorze, takie jak OpenAI Whisper, osiągają wyższą odporność na szumy i zróżnicowany materiał akustyczny w trybie \textit{zero-shot} bez konieczności dostrajania do specyficznego zbioru testowego \cite[s.~1, 8--9]{radford2023robust}. Wariant WhisperX dodatkowo podnosi precyzję dzięki eliminacji halucynacji na długich nagraniach \cite[s.~2]{ferraro2023benchmarking}.
+
+\subsubsection{Opóźnienia i czas przetwarzania}
+Czas reakcji systemu (latencja) oraz wskaźnik przetwarzania w czasie rzeczywistym (ang. \textit{Real-Time Factor} -- RTF) różnią się fundamentalnie w zależności od paradygmatu wdrożeniowego:
+\begin{itemize}
+    \item \textbf{Tryb strumieniowy (Real-Time):} Usługi Google, Azure, Amazon oraz Web Speech API pozwalają na przesyłanie strumienia audio i uzyskiwanie natychmiastowych wyników cząstkowych (\textit{interim results}), co gwarantuje niskie opóźnienie percepcji użytkownika.
+    \item \textbf{Tryb wsadowy (Batch Processing):} W przypadku standardowego modelu OpenAI Whisper czas transkrypcji oraz wskaźnik RTF wynikają bezpośrednio z rozmiaru wybranej architektury (od 39M do 1550M parametrów) \cite[s.~5]{radford2023robust} oraz wydajności akceleratora GPU \cite[s.~18]{pudo2024optimizing}. Z kolei zastosowanie biblioteki WhisperX i algorytmu segmentacji VAD (\textit{Cut \& Merge}) wprowadza równoległe przetwarzanie wsadowe, co eliminuje sekwencyjne wąskie gardło i umożliwia nawet 12-krotne przyspieszenie wnioskowania \cite[s.~1, 4]{bain2023whisperx}.
+\end{itemize}
+
+\subsubsection{Wymagania sprzętowe}
+Korzystanie z interfejsów Cloud API (Google, Azure, Amazon) oraz Web Speech API przenosi całą złożoność obliczeniową na serwery dostawców lub silnik przeglądarki, nie nakładając istotnych wymagań sprzętowych na urządzenie klienta. Odmiennie sytuacja wygląda w przypadku lokalnego wdrożenia modelu OpenAI Whisper (\textit{On-Device / Self-Hosted}). Choć model ten może zostać uruchomiony bezpośrednio na procesorze (CPU) lub z wykorzystaniem akceleratorów graficznych różnych producentów (poprzez środowiska CUDA, ROCm, Vulkan czy DirectML), to w celu uzyskania niskiego opóźnienia i akceptowalnej wydajności -- zwłaszcza dla większych wariantów \texttt{medium} i \texttt{large-v3} -- kluczowe jest dysponowanie dedykowaną kartą graficzną oraz odpowiednim zasobem pamięci VRAM (od ok. 1~GB dla wersji \texttt{tiny}/\texttt{base} do ok. 5--10~GB dla wyższych wariantów w precyzji FP16) \cite[s.~5]{radford2023robust}, \cite[s.~18]{pudo2024optimizing}.
+
+\subsubsection{Koszty użytkowania}
+Struktura finansowa analizowanych rozwiązań dzieli się na dwa główne modele:
+\begin{itemize}
+    \item \textbf{Rozliczenie za czas audio (Pay-As-You-Go):} Komercyjne API chmurowe naliczają opłaty za każdą przetworzoną minutę lub sekundę dźwięku (np. $0{,}016$--$0{,}024$\,\$/min w Google STT, $1{,}00$\,\$/godz. w Azure Speech, od $0{,}006$\,\$/min w Amazon Transcribe oraz $0{,}006$\,\$/min w chmurowym OpenAI API. Dostawcy oferują zazwyczaj bezpłatne pakiety startowe (np. 60 minut miesięcznie w Google i AWS lub 5 godzin w Azure.
+    \item \textbf{Model bezpłatny / koszt infrastruktury:} Web Speech API jest całkowicie darmowe. Otwarty model Whisper w wersji lokalnej nie generuje żadnych opłat subskrypcyjnych za wolumen audio, jednak wymaga poniesienia kosztów zakupu lub utrzymania serwera z GPU.
+\end{itemize}
+
+\subsubsection{Możliwość pracy offline}
+Komercyjne interfejsy API (Google, Azure, AWS, OpenAI API) wymagają stałego i stabilnego połączenia z siecią Internet. Lokalne uruchomienie modelu OpenAI Whisper (oraz WhisperX) zapewnia $100\%$ autonomii i pełne działanie w środowisku izolowanym (\textit{air-gapped / offline}), co ma kluczowe znaczenie z punktu widzenia ochrony prywatności i bezpieczeństwa danych. Web Speech API domyślnie wykorzystuje połączenie chmurowe dostawcy przeglądarki, choć nowsze wersje pozwalają na opcjonalne pobranie lokalnego pakietu językowego \cite{mdnWebSpeechAPI}.
+
+% dotąd sprawdzone
+
+
+\subsubsection{Dostępność języka polskiego}
+Wszystkie analizowane platformy oferują oficjalne wsparcie dla języka polskiego, jednak różnią się jakością i stopniem dopracowania modeli:
+\begin{itemize}
+    \item \textbf{Cloud API:} Google, Azure i AWS oferują dedykowane modele językowe dla polszczyzny z obsługą interpunkcji i odmiany cyfr \cite[s.~304--312]{chlewicki2024potencjal}.
+    \item \textbf{OpenAI Whisper:} Posiada bardzo wysoką skuteczność w rozpoznawaniu mowy polskiej wykształconą w procesie pre-treningu na wielojęzycznym korpusie, radząc sobie wyjątkowo dobrze ze złożoną fleksją oraz rzadkim słownictwem \cite[s.~3, 11, 23]{radford2023robust}, \cite[s.~315--316]{pondel2024e2e}.
+    \item \textbf{Web Speech API:} Jakość rozpoznawania języka polskiego zależy bezpośrednio od silnika dostarczanego przez producenta danej przeglądarki i systemu operacyjnego \cite{mdnWebSpeechAPI}.
+\end{itemize}
+
+\subsubsection{Syntetyczne zestawienie zbiorcze}
+W celu zachowania przejrzystości, syntetyczne porównanie przeanalizowanych rozwiązań podzielono na dwa obszary: cechy architektoniczno-operacyjne (Tabela~\ref{tab:asr_comparison_arch}) oraz funkcje zaawansowane i model finansowy (Tabela~\ref{tab:asr_comparison_feat}).
+
+\begin{table}[htbp]
+\centering
+\caption{Porównanie cech architektonicznych i operacyjnych analizowanych narzędzi ASR.}
+\label{tab:asr_comparison_arch}
+\small
+\begin{tabular}{|p{2.8cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{2.8cm}|p{2.2cm}|}
+\hline
+\textbf{Narzędzie} & \textbf{Model wdrożenia} & \textbf{Tryby pracy} & \textbf{Wymóg łączności} & \textbf{Prywatność danych} \\ \hline
+\textbf{Google STT} & Chmura (SaaS) & Batch / Stream & Tak (Internet) & Zależna od opcji \\ \hline
+\textbf{Azure Speech} & Chmura (SaaS) & Batch / Fast / Real-Time & Tak (Internet) & Wysoka (Enterprise) \\ \hline
+\textbf{Amazon Transcribe} & Chmura (SaaS) & Batch / Stream & Tak (Internet) & Wysoka (Enterprise) \\ \hline
+\textbf{Whisper / WhisperX} & On-Device / Self-Hosted & Batch / Stream & Brak (100\% offline) & 100\% lokalnie \\ \hline
+\textbf{Web Speech API} & Przeglądarka (Client-Side) & Stream (Real-Time) & Zazwyczaj tak & Zależna od przeglądarki \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Porównanie funkcji zaawansowanych i modelu finansowego analizowanych narzędzi ASR.}
+\label{tab:asr_comparison_feat}
+\small
+\begin{tabular}{|p{2.8cm}|p{3.2cm}|p{3.0cm}|p{3.8cm}|}
+\hline
+\textbf{Narzędzie} & \textbf{Sposób rozliczania} & \textbf{Diarizacja mówców} & \textbf{Adaptacja słownikowa} \\ \hline
+\textbf{Google STT} & za minutę audio & Tak & PhraseSet \\ \hline
+\textbf{Azure Speech} & za sekundę audio & Tak (do 35 mówców) & Custom Speech \\ \hline
+\textbf{Amazon Transcribe} & za sekundę audio & Tak & Custom Vocabulary \\ \hline
+\textbf{Whisper / WhisperX} & Darmowy (koszt GPU) & Tak (przez WhisperX) & Prompt / Keywords \\ \hline
+\textbf{Web Speech API} & Darmowy (0 USD) & Brak & SpeechRecognitionPhrase \\ \hline
+\end{tabular}
+\end{table}
+
+\vspace{0.2cm}
+\noindent\textbf{Uwaga metodyczna:} Przedstawiona charakterystyka posiada wymiar teoretyczno-architektoniczny. Rzeczywiste parametry jakościowe (WER, CER) oraz wydajnościowe (RTF) dla języka polskiego w zróżnicowanych warunkach akustycznych zostaną poddane szczegółowym pomiarom empirycznym na stanowisku badawczym w kolejnych rozdziałach pracy.
+
 
 \subsubsection{Dokładność transkrypcji}
 
