@@ -1,4 +1,5 @@
-\section{Przegląd dostępnych narzędzi i usług Speech-to-Text}
+\section{Implementacja metody i badań}
+\subsection{Przegląd dostępnych narzędzi i usług Speech-to-Text}
 Współczesny rynek technologii automatycznego rozpoznawania mowy (ASR / STT) oferuje szeroki wachlarz rozwiązań, które można zaklasyfikować do trzech głównych kategorii architektonicznych: komercyjnych usług chmurowych (ang. \textit{Cloud API}), otwartych i lokalnych modeli głębokich (ang. \textit{Open-Source / On-Device}) oraz natywnych mechanizmów przeglądarkowych. Wybór odpowiedniego narzędzia w projektach programistycznych wymaga przeanalizowania kompromisu pomiędzy dokładnością transkrypcji, czasem odpowiedzi systemu (latencją), kosztami eksploatacji oraz wymogami dotyczącymi prywatności danych. Do grupy wiodących dostawców komercyjnych API chmurowych należą platformy Google Cloud Speech-to-Text, Microsoft Azure Speech Service oraz Amazon Transcribe. Usługi te działają w modelu serwerowym (\textit{Software as a Service} -- SaaS), w którym akwizycja i wstępne przetwarzanie audio zachodzą po stronie klienta, natomiast właściwe dekodowanie akustyczne i językowe realizowane jest na infrastrukturze dostawcy chmury. Rozwiązania te oferują wysokie wsparcie dla przetwarzania strumieniowego w czasie rzeczywistym oraz stałe aktualizacje modeli bez konieczności angażowania zasobów sprzętowych użytkownika końcowego. Alternatywą dla usług chmurowych są samodzielne modele uczenia głębokiego uruchamiane lokalnie (\textit{On-Device} / \textit{Self-Hosted}), wśród których standardem stał się model OpenAI Whisper oraz jego zoptymalizowane warianty (np. WhisperX) \cite[s.~2--3]{ferraro2023benchmarking}. Modele te pozwalają na pełną autonomię przetwarzania, brak opłat subskrypcyjnych za pojedyncze zapytania oraz gwarancję prywatności danych audio, wymagają jednak odpowiednich zasobów sprzętowych (pamięci VRAM oraz wydajnych akceleratorów GPU) po stronie serwera lub urządzenia brzegowego \cite[s.~18]{pudo2024optimizing}. Ostatnią kategorię stanowią interfejsy natywne, reprezentowane przez standard W3C Web Speech API, dostarczający wbudowane w przeglądarki internetowe API do rozpoznawania mowy (\texttt{SpeechRecognition}) \cite[s.~1]{mdnWebSpeechAPI}. Choć rozwiązanie to wyeliminowuje potrzebę zewnętrznych integracji i opłat, jego działanie jest silnie uzależnione od silnika dostarczanego przez producenta danej przeglądarki i systemu operacyjnego.
 
 \subsection{Wybór analizowanych narzędzi ASR}
@@ -168,16 +169,3 @@ W celu zachowania przejrzystości, syntetyczne porównanie przeanalizowanych roz
 
 \vspace{0.2cm}
 \noindent\textbf{Uwaga metodyczna:} Przedstawiona charakterystyka posiada wymiar teoretyczno-architektoniczny. Rzeczywiste parametry jakościowe (WER, CER) oraz wydajnościowe (RTF) dla języka polskiego w zróżnicowanych warunkach akustycznych zostaną poddane szczegółowym pomiarom empirycznym na stanowisku badawczym w kolejnych rozdziałach pracy.
-
-
-\subsubsection{Dokładność transkrypcji}
-
-\subsubsection{Opóźnienia i czas przetwarzania}
-
-\subsubsection{Wymagania sprzętowe}
-
-\subsubsection{Koszty użytkowania}
-
-\subsubsection{Możliwość pracy offline}
-
-\subsubsection{Dostępność języka polskiego}

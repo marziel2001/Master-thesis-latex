@@ -1,5 +1,7 @@
-\documentclass{article}
+\documentclass[12pt]{article}
 \usepackage[T1]{fontenc} % for polish characters
+\usepackage[a4paper,margin=2.5cm]{geometry}
+
 % \usepackage[protrusion=true,expansion=true]{microtype}
 \hbadness=10000
 \hfuzz=100pt
@@ -15,11 +17,19 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 
-\title{Praca magisterska - Porównanie i analiza modeli Speech To Text v12.08.26}
+\setlength{\parindent}{0pt}
+
+\makeatletter
+\renewcommand{\@seccntformat}[1]{\csname the#1\endcsname.\quad}
+\makeatother
+
+\title{Praca magisterska - Porównanie i analiza modeli Speech To Text 07.11.26}
 \author{Marcel Zieliński}
 \date{}
 
 \begin{document}
+% article daje 1.2, wiec 1.2x1.25 to ok 1.5
+\linespread{1.25}\selectfont
 
 \maketitle
 \break
@@ -65,4 +75,3 @@
 \bibliography{bibliography}
 
 \end{document}
-
