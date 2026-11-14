@@ -3,10 +3,10 @@
 \usepackage[a4paper,margin=2.5cm]{geometry}
 
 % \usepackage[protrusion=true,expansion=true]{microtype}
-\hbadness=10000
-\hfuzz=100pt
-\vbadness=10000
-\vfuzz=100pt
+\hbadness=500
+\hfuzz=30pt
+\vbadness=500
+\vfuzz=30pt
 % powyzsze 4 tylko ukrywaja bledy na chwile
 \hyphenation{OpenAI}
 % powyzsze blokuje dzielenie wymienionych w nawiasie słów
@@ -14,10 +14,12 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
+\usepackage{array}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric, arrows.meta, positioning}
 
 \setlength{\parindent}{0pt}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 
 \makeatletter
 \renewcommand{\@seccntformat}[1]{\csname the#1\endcsname.\quad}

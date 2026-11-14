@@ -7,7 +7,7 @@ Do analizy i przeglądu teoretycznego w niniejszej pracy wyselekcjonowano zestaw
 \begin{itemize}
     \item \textbf{Komercyjne interfejsy API chmurowego (SaaS):} Google Cloud Speech-to-Text API, Microsoft Azure Speech Service oraz Amazon Transcribe -- reprezentujące standard przemysłowy rozwiązań chmurowych o wysokiej skalowalności.
     \item \textbf{Lokalne i otwarte modele głębokie (Open-Source / Self-Hosted):} OpenAI Whisper oraz jego zoptymalizowaną odmianę WhisperX -- reprezentujące wielozadaniowe architektury sekwencja-do-sekwencji (Transformer) trenowane na wielkoskalowych zbiorach danych.
-    \item \textbf{Natywny interfejs przeglądarkowy (Client-Side API):} Web Speech API (\texttt{SpeechRecognition}) -- reprezentujący rozwiązania wykonywane bezpośrednio w środowisku przeglądarki internetowej bez konieczności utrzymywania własnej infrastruktury backendowej.
+    \item \textbf{Natywny interfejs przeglądarkowy (Client-Side API):} Web Speech API (\texttt{Speech\-Recognition}) -- reprezentujący rozwiązania wykonywane bezpośrednio w środowisku przeglądarki internetowej bez konieczności utrzymywania własnej infrastruktury backendowej.
 \end{itemize}
 
 Ograniczenie zestawu modeli typu open-source do pary \textbf{Whisper + WhisperX} oraz pominięcie innych popularnych architektur (takich jak Mozilla DeepSpeech, SpeechBrain czy Conformer) wynika z obiektywnych przesłanek naukowych i inżynieryjnych:
@@ -80,7 +80,7 @@ Usługa udostępnia również dedykowane interfejsy API dostosowane do specyficz
 OpenAI Whisper to wielozadaniowy, otwarty system automatycznego rozpoznawania mowy oparty na architekturze sekwencja-do-sekwencji (Transformer), wytrenowany w reżimie słabego nadzoru na ogromnym zbiorze 680\,000 godzin wielojęzycznych i wielozadaniowych danych audio zgromadzonych z sieci Internet \cite[s.~1, 1--4]{radford2023robust}. Architektura ta przetwarza sygnał audio w 30-sekundowych okienkach przeliczanych na log-spektrogramy Mel, łącząc rozpoznawanie mowy z detekcją języka, automatyczną interpunkcją oraz możliwością bezpośredniej translacji na język angielski \cite[s.~3--5]{radford2023robust}. Model oferowany jest w dwóch zasadniczych paradygmatach wdrożeniowych: lokalnym (\textit{On-Device / Self-Hosted}) oraz chmurowym (\textit{Hosted API}) \cite{openai_file_transcription}, \cite[s.~18]{pudo2024optimizing}.
 \begin{itemize}
 \item \textbf{Wariant lokalny (On-Device / Open-Source):} OpenAI udostępnia nieodpłatnie kod źródłowy oraz wagi modeli w kilku wariantach rozmiarowych — od wersji \texttt{tiny} (39M parametrów) i \texttt{base} (74M), przez \texttt{small} (244M) i \texttt{medium} (769M), aż po najnowszą generację \texttt{large-v3} (1{,}55B parametrów). Uruchomienie modelu w środowisku lokalnym gwarantuje $100\%$ prywatności danych oraz zero opłat subskrypcyjnych za przetwarzane minuty nagrań, wymaga jednak odpowiednich zasobów sprzętowych (pamięci VRAM od 1\,GB do ponad 10\,GB oraz akceleracji GPU) \cite{openai_whisper_repo}. W środowisku programistycznym rozwijane są dodatkowo zoptymalizowane silniki, takie jak \textbf{WhisperX}, które integrują wstępną detekcję aktywności głosu (VAD), wymuszone wyrównanie fonetyczne (\textit{forced alignment}) oraz przetwarzanie wsadowe (\textit{batching}), co drastycznie skraca czas przetwarzania (RTF) i eliminuje problem pętli powtórzeń na długich nagraniach \cite[s.~2]{ferraro2023benchmarking}.
-\item \textbf{Wariant chmurowy (OpenAI API):} Dostępny poprzez oficjalny endpoint \texttt{/v1/audio/transcriptions}, obsługujący pliki audio o rozmiarze do 25\,MB w formatach m.in. MP3, MP4, WAV, M4A i WebM \cite{openai_file_transcription}. Dostawca oferuje zarówno klasyczny model \texttt{whisper-1}, jak i nowsze generacje dedykowane do transkrypcji asynchronicznej (np. \texttt{gpt-transcribe}) oraz modele ze wsparciem dla automatycznej diarizacji mówców (\texttt{gpt-4o-transcribe-diarize}) \cite{openai_file_transcription}. Wariant chmurowy umożliwia również strumieniowanie zwracanych hipotez tekstowych w czasie przetwarzania gotowego pliku (\textit{file streaming}) \cite{openai_file_transcription}.
+\item \textbf{Wariant chmurowy (OpenAI API):} Dostępny poprzez oficjalny endpoint \texttt{/v1/audio/\allowbreak transcriptions}, obsługujący pliki audio o rozmiarze do 25\,MB w formatach m.in. MP3, MP4, WAV, M4A i WebM \cite{openai_file_transcription}. Dostawca oferuje zarówno klasyczny model \texttt{whisper-1}, jak i nowsze generacje dedykowane do transkrypcji asynchronicznej (np. \texttt{gpt-transcribe}) oraz modele ze wsparciem dla automatycznej diarizacji mówców (\texttt{gpt-4o-transcribe-diarize}) \cite{openai_file_transcription}. Wariant chmurowy umożliwia również strumieniowanie zwracanych hipotez tekstowych w czasie przetwarzania gotowego pliku (\textit{file streaming}) \cite{openai_file_transcription}.
 \end{itemize}
 Model finansowy chmurowego API OpenAI opiera się na rozliczeniu per-skorzystanie za rzeczywisty czas nagrania audio (np. $0{,}0045$\,\$/min dla modelu \texttt{gpt-transcribe} oraz $0{,}006$\,\$/min dla \texttt{whisper-1}) bez stałych opłat abonamentowych \cite{openai_pricing}. Wśród funkcji wspomagających precyzję transkrypcji OpenAI API udostępnia opcję podawania kontekstu słownikowego poprzez parametr \texttt{prompt} (ograniczony w modelu Whisper do 224 tokenów) lub dedykowane parametry \texttt{keywords} oraz \texttt{languages}, które pozwalają na przekazywanie do modelu listy oczekiwanych słów kluczowych i skrótów branżowych \cite{openai_file_transcription}.
 
@@ -88,8 +88,9 @@ Model finansowy chmurowego API OpenAI opiera się na rozliczeniu per-skorzystani
 Web Speech API to oficjalna specyfikacja organizacji W3C, dostarczająca natywny interfejs programistyczny do obsługi rozpoznawania mowy (\texttt{SpeechRecognition}) oraz syntezy mowy (\texttt{SpeechSynthesis}) bezpośrednio z poziomu przeglądarki internetowej po stronie klienta. Interfejs rozpoznawania mowy bazuje na przechwytywaniu strumienia audio z mikrofonu użytkownika lub ścieżki dźwiękowej i zwracaniu zestawu dopasowanych hipotez tekstowych. Architektura Web Speech API opiera się na kontrolerze \texttt{SpeechRecognition}, który udostępnia szereg kluczowych właściwości konfiguracyjnych i zdarzeń programistycznych \cite{mdnWebSpeechAPI}:
 \begin{itemize}
     \item \textbf{Tryby pracy i wyniki pośrednie:} Właściwość \texttt{continuous} określa, czy rozpoznawanie przebiega w trybie ciągłym, czy zatrzymuje się po wykryciu pojedynczej frazy, natomiast \texttt{interimResults} pozwala na odbieranie wstępnych hipotez w trakcie trwania wypowiedzi \cite{mdnWebSpeechAPI}.
-    \item \textbf{Konfiguracja językowa i warianty:} Parametr \texttt{lang} definiuje kod językowy (np. \texttt{pl-PL}), zaś \texttt{maxAlternatives} określa liczbę zwracanych alternatywnych wariantów transkrypcji wraz ze wskaźnikami pewności (\textit{confidence}) \cite{mdnWebSpeechAPI}. \item \textbf{Obsługa zdarzeń (\textit{Event Handlers}):} Reakcja na strumień danych realizowana jest poprzez dedykowane zdarzenia, w tym \texttt{onresult} (przekazujące obiekt \texttt{SpeechRecognitionEvent} zawierający strukturę \texttt{SpeechRecognitionResultList}), \texttt{onspeechend}, \texttt{onnomatch} oraz \texttt{onerror} \cite{mdnWebSpeechAPI}.
-    \item \textbf{Kontekstowe wzmacnianie fraz (\textit{Contextual Biasing}):} Specyfikacja udostępnia tablicę obiektów \texttt{SpeechRecognitionPhrase} przypisywaną do właściwości \texttt{phrases}, co pozwala na nadawanie wag (\textit{boost}) określonym słowom kluczowym i podnoszenie dokładności ich rozpoznawania \cite{mdnWebSpeechAPI}.
+    \item \textbf{Konfiguracja językowa i warianty:} Parametr \texttt{lang} definiuje kod językowy (np. \texttt{pl-PL}), zaś \texttt{maxAlternatives} określa liczbę zwracanych alternatywnych wariantów transkrypcji wraz ze wskaźnikami pewności (\textit{confidence}) \cite{mdnWebSpeechAPI}.
+    \item \textbf{Obsługa zdarzeń (\textit{Event Handlers}):} Reakcja na strumień danych realizowana jest poprzez dedykowane zdarzenia, w tym \texttt{onresult} (przekazujące obiekt \texttt{Speech\-Recognition\-Event} z listą wyników), \texttt{onspeechend}, \texttt{onnomatch} oraz \texttt{onerror} \cite{mdnWebSpeechAPI}.
+    \item \textbf{Kontekstowe wzmacnianie fraz (\textit{Contextual Biasing}):} Specyfikacja udostępnia tablicę obiektów \texttt{Speech\-Recognition\-Phrase} przypisywaną do właściwości \texttt{phrases}, co pozwala na nadawanie wag (\textit{boost}) określonym słowom kluczowym i podnoszenie dokładności ich rozpoznawania \cite{mdnWebSpeechAPI}.
 \end{itemize}
 Domyślnie większość współczesnych przeglądarek (m.in. Google Chrome) realizuje proces rozpoznawania mowy poprzez przesyłanie zarejestrowanego dźwięku do zewnętrznych serwerów chmurowych producenta przeglądarki lub wykorzystuje systemowe silniki dyktowania systemu operacyjnego. Aby rozwiązać problemy związane z poufnością danych oraz brakiem dostępu do sieci, nowsze rozszerzenia API wprowadzają możliwość przetwarzania lokalnego (\textit{on-device}) poprzez ustawienie flagi \texttt{processLocally = true}. Wykorzystanie tego trybu wymaga weryfikacji dostępności pakietu językowego na urządzeniu za pomocą metody statycznej \texttt{SpeechRecognition.available()} oraz jego ewentualnego pobrania metodą \texttt{SpeechRecognition.install()} dla wymaganego poziomu jakości (np. \texttt{dictation}). Głównymi zaletami Web Speech API są całkowity brak opłat finansowych dla dewelopera, brak konieczności budowania backendowej infrastruktury serwerowej oraz natywna integracja ze środowiskiem przeglądarki. Do istotnych ograniczeń należą jednak niejednolite wsparcie między różnymi przeglądarkami (wymagające stosowania przedrostków, np. \texttt{webkitSpeechRecognition}), uzależnienie jakości od polityki dostawcy przeglądarki oraz brak bezpośredniego wpływu programisty na architekturę i parametry użytego pod spodem modelu ASR \cite{mdnWebSpeechAPI}.
 
@@ -140,7 +141,7 @@ W celu zachowania przejrzystości, syntetyczne porównanie przeanalizowanych roz
 \caption{Porównanie cech architektonicznych i operacyjnych analizowanych narzędzi ASR.}
 \label{tab:asr_comparison_arch}
 \small
-\begin{tabular}{|p{2.8cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{2.8cm}|p{2.2cm}|}
+\begin{tabular}{|P{2.8cm}|P{2.2cm}|P{2.2cm}|P{2.2cm}|P{2.8cm}|}
 \hline
 \textbf{Narzędzie} & \textbf{Model wdrożenia} & \textbf{Tryby pracy} & \textbf{Wymóg łączności} & \textbf{Prywatność danych} \\ \hline
 \textbf{Google STT} & Chmura (SaaS) & Batch / Stream & Tak (Internet) & Zależna od opcji \\ \hline
@@ -153,19 +154,21 @@ W celu zachowania przejrzystości, syntetyczne porównanie przeanalizowanych roz
 
 \begin{table}[htbp]
 \centering
-\caption{Porównanie funkcji zaawansowanych i modelu finansowego analizowanych narzędzi ASR.}
+\caption{Porównanie funkcji i modelu finansowego narzędzi ASR.}
 \label{tab:asr_comparison_feat}
 \small
-\begin{tabular}{|p{2.8cm}|p{3.2cm}|p{3.0cm}|p{3.8cm}|}
+\begin{tabular}{|P{2.8cm}|P{3.2cm}|P{3.0cm}|P{3.8cm}|}
 \hline
 \textbf{Narzędzie} & \textbf{Sposób rozliczania} & \textbf{Diarizacja mówców} & \textbf{Adaptacja słownikowa} \\ \hline
 \textbf{Google STT} & za minutę audio & Tak & PhraseSet \\ \hline
 \textbf{Azure Speech} & za sekundę audio & Tak (do 35 mówców) & Custom Speech \\ \hline
 \textbf{Amazon Transcribe} & za sekundę audio & Tak & Custom Vocabulary \\ \hline
 \textbf{Whisper / WhisperX} & Darmowy (koszt GPU) & Tak (przez WhisperX) & Prompt / Keywords \\ \hline
-\textbf{Web Speech API} & Darmowy (0 USD) & Brak & SpeechRecognitionPhrase \\ \hline
+\textbf{Web Speech API} & Darmowy (0 USD) & Brak & Speech\-Recognition\-Phrase \\ \hline
 \end{tabular}
 \end{table}
 
 \vspace{0.2cm}
-\noindent\textbf{Uwaga metodyczna:} Przedstawiona charakterystyka posiada wymiar teoretyczno-architektoniczny. Rzeczywiste parametry jakościowe (WER, CER) oraz wydajnościowe (RTF) dla języka polskiego w zróżnicowanych warunkach akustycznych zostaną poddane szczegółowym pomiarom empirycznym na stanowisku badawczym w kolejnych rozdziałach pracy.
+\noindent\textbf{Uwaga metodyczna:}
+
+Przedstawiona charakterystyka posiada wymiar teoretyczno-architektoniczny. Rzeczywiste parametry jakościowe (WER, CER) oraz wydajnościowe (RTF) dla języka polskiego w zróżnicowanych warunkach akustycznych zostaną poddane szczegółowym pomiarom empirycznym na stanowisku badawczym w kolejnych rozdziałach pracy.
