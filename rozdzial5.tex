@@ -171,24 +171,3 @@ Po stronie backendu FastAPI funkcja \texttt{normalize\_for\_metrics} realizuje n
 \end{itemize}
 
 W interfejsie użytkownika w widoku \texttt{Transcribe file} udostępniono dedykowane przyciski umożliwiające ręczne wyzwolenie tokenizacji tekstu wejściowego oraz wymuszenie ponownego przeliczenia metryk (\textit{ang.~refresh metrics}). W przypadku wywołania endpointu \texttt{/api/metrics} z flagą \texttt{normalize=True}, backend wykonuje tożsamą normalizację na obu tekstach przed obliczeniem odległości Levenshteina za pomocą biblioteki \texttt{jiwer}.
-
-
-\subsection{Implementacja orkiestracji i komunikacji z usługami STT}
-\label{subsec:stt_api_communication_impl}
-% Przesyłanie nagrań przez multipart/form-data, równoległe wywołania adapterów ASR w FastAPI,
-% odporność na awarie pojedynczych modeli (partial success), pomiar czasu przetwarzania serwera.
-
-\subsection{Wizualizacja wyników, edycja i analiza metryk}
-\label{subsec:visualization_diff_impl}
-% Karty wyników (ModelCard), algorytm podświetlania różnic (diff HTML), wyliczanie metryk WER/CER i RTF,
-% odświeżanie metryk oraz wersjonowanie stanu wyliczeń na frontendzie.
-
-\subsection{Moduł zapisu sesji oraz czytnik wyników (Results Reader)}
-\label{subsec:results_reader_impl}
-% Zapis struktur JSON w katalogu outputs/runs/, odczyt zapisanego przebiegu w widoku ComparePage,
-% możliwość edycji tekstu referencyjnego i przeliczania metryk offline (bez ponownego odpalaia API).
-
-\subsection{Obsługa błędów, bezpieczeństwo i wydajność}
-\label{subsec:error_handling_performance}
-% Bezpieczne czyszczenie plików tymczasowych (context manager w Pythonie), walidacja ścieżek plików,
-% obsługa limitów API i zapobieganie wyciekom pamięci po stronie klienta.

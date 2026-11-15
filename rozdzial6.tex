@@ -1,9 +1,48 @@
+
 \section{Studium porównawcze skuteczności wybranych narzędzi STT}
+\label{sec:comparative_study}
+
+W niniejszym rozdziale przedstawiono przebieg oraz wyniki eksperymentu badawczego mającego na celu ewaluację jakościową i wydajnościową wybranych systemów rozpoznawania mowy dla języka polskiego. Testy przeprowadzono z wykorzystaniem autorskiej aplikacji badawczej opisanej w rozdziale~\ref{sec:implementation}.
+
 \subsection{Projekt eksperymentu}
+\label{subsec:experiment_design}
+
+Eksperyment został zaprojektowany w sposób umożliwiający zweryfikowanie odporności silników ASR na zróżnicowane trudności fonetyczne, leksykalne oraz zakłócenia akustyczne otoczenia.
 
 \subsubsection{Przygotowanie zestawu nagrań}
+\label{subsubsec:dataset_preparation}
+
+Materiał badawczy zorganizowano w ustrukturyzowany scenariusz testowy obejmujący 6 nagrań audio przypisanych do trzech głównych kategorii stopnia skomplikowania materiału słownego i warunków nagrania:
+
+\begin{enumerate}
+    \item \textbf{Zwykły tekst lektury (warunki czyste):} 
+    \textit{Nagranie 1} stanowiło czytany fragment utworu \textit{„Królowa Śniegu”} (Hans Christian Andersen, Rozdział III: \textit{W ogródku wróżki}). Nagranie zrealizowano w cichym pomieszczeniu ze zmiennym tempem wypowiedzi (czytanie wolne, szybkie oraz dynamiczna zmiana tempa w trakcie), co pozwoliło ocenić stabilność modeli przy standardowej mowie ciągłej.
+
+    \item \textbf{Zwykły tekst lektury (warunki zakłócone / hałas):} 
+    \textit{Nagranie 2} stanowiło kontynuację tekstu z nagrania pierwszego, jednak zostało zarejestrowane w warunkach znacznego szumu otoczenia (np. pracujący odkurzacz, mikser, głośne rozmowy, muzyka w tle lub szum ruchu ulicznego). Nagranie wykonano z większej odległości mikrofonu od ust ($1$--$1{,}5$~m).
+
+    \item \textbf{Tekst skomplikowany leksykalnie i stylistycznie:}
+    \begin{itemize}
+        \item \textit{Nagranie 3 (\textit{„Sklepy cynamonowe”}):} Pierwsza strona prozy Bruno Schulza, cechująca się bogatym słownictwem literackim, rzadkimi wyrazami oraz rozbudowaną fleksją języka polskiego.
+        \item \textit{Nagranie 4 (Harmonogram i wydarzenia w ZOO we Wrocławiu):} Materiał zawierający specyficzne nazwy własne, egzotyczne nazwy zwierząt oraz liczby i godziny. Test miał na celu weryfikację sposobu zamiany mowy na cyfry (zapis cyfrowy vs. słowny) oraz nazewnictwo specjalistyczne.
+        \item \textit{Nagranie 5 (Wierszyki na dykcję / łamańce językowe):} Zestawienie trudnych fraz fonetycznych z zagęszczeniem zbitek spółgłoskowych, służące sprawdzeniu precyzji detekcji trudnych słów polskich.
+    \end{itemize}
+
+    \item \textbf{Mowa spontaniczna (wypowiedź swobodna):} 
+    \textit{Nagranie 6} miało charakter nieustrukturyzowany ($1$--$3$~minutowa swobodna wypowiedź na dowolny temat, np. opis minionego dnia lub hobby). Celem było przetestowanie radzenia sobie modeli z naturalnymi cechami mowy żywej: pauzami, jąkaniem się, zastanawianiem (\textit{„yyy”}, \textit{„eee”}) oraz wtrąceniami.
+\end{enumerate}
 
 \subsubsection{Warunki badania i pomiarów}
+\label{subsubsec:test_conditions}
+
+W celu zapewnienia reprezentatywności wyników w zróżnicowanych warunkach użytkowych, przyjęto następujące zasady akwizycji i przygotowania danych:
+
+\begin{itemize}
+    \item \textbf{Sprzęt i akustyka:} Nagrania zostały zrealizowane przez wariantywną grupę probantów z użyciem wbudowanych mikrofonów w telefonach komórkowych. Mikrofony znajdowały się w odległości powyżej $30$~cm od ust dla nagrań standardowych oraz $100$--$150$~cm przy nagraniach w hałasie, co wywołało efekt pogłosu i spadku stosunku sygnału do szumu (\textit{ang.~Signal-to-Noise Ratio -- SNR}).
+    \item \textbf{Korekta i dopasowanie tekstu wzorcowego (\textit{Ground Truth Alignment}):} Aby uniknąć sztucznego zawyżania błędu WER/CER w sytuacjach, gdy czytający pominął słowo, przejęzyczył się lub nie doczytał fragmentu tekstu, tekst wzorcowy dopasowywano dokładnie do faktycznie wypowiedzianej wypowiedzi. Opracowana aplikacja badawcza automatycznie wyróżniała luki oraz brakujące sekwencje (\textit{diff HTML}), umożliwiając precyzyjną weryfikację tekstru referencyjnego.
+    \item \textbf{Normalizacja tekstu:} Przed wyznaczeniem metryk błędu wszystkie teksty referencyjne oraz hipotezy poddawano ujednoliceniu (usunięcie interpunkcji, konwersja do małych liter), co pozwoliło ocenić rzeczywiste dopasowanie leksykalne z wyeliminowaniem różnic w formatowaniu.
+\end{itemize}
+
 \subsection{Metryki oceny jakości transkrypcji (WER, CER, RTT)}
 \subsection{Wyniki testów porównawczych}
 \subsection{Analiza statystyczna wyników}
