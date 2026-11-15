@@ -122,14 +122,11 @@ Struktura finansowa analizowanych rozwiązań dzieli się na dwa główne modele
 \subsubsection{Możliwość pracy offline}
 Komercyjne interfejsy API (Google, Azure, AWS, OpenAI API) wymagają stałego i stabilnego połączenia z siecią Internet. Lokalne uruchomienie modelu OpenAI Whisper (oraz WhisperX) zapewnia $100\%$ autonomii i pełne działanie w środowisku izolowanym (\textit{air-gapped / offline}), co ma kluczowe znaczenie z punktu widzenia ochrony prywatności i bezpieczeństwa danych. Web Speech API domyślnie wykorzystuje połączenie chmurowe dostawcy przeglądarki, choć nowsze wersje pozwalają na opcjonalne pobranie lokalnego pakietu językowego \cite{mdnWebSpeechAPI}.
 
-% dotąd sprawdzone
-
-
 \subsubsection{Dostępność języka polskiego}
 Wszystkie analizowane platformy oferują oficjalne wsparcie dla języka polskiego, jednak różnią się jakością i stopniem dopracowania modeli:
 \begin{itemize}
-    \item \textbf{Cloud API:} Google, Azure i AWS oferują dedykowane modele językowe dla polszczyzny z obsługą interpunkcji i odmiany cyfr \cite[s.~304--312]{chlewicki2024potencjal}.
-    \item \textbf{OpenAI Whisper:} Posiada bardzo wysoką skuteczność w rozpoznawaniu mowy polskiej wykształconą w procesie pre-treningu na wielojęzycznym korpusie, radząc sobie wyjątkowo dobrze ze złożoną fleksją oraz rzadkim słownictwem \cite[s.~3, 11, 23]{radford2023robust}, \cite[s.~315--316]{pondel2024e2e}.
+    \item \textbf{Cloud API:} Google, Azure i AWS oferują dedykowane modele językowe dla polszczyzny z obsługą interpunkcji i odmiany cyfr \cite[s.~314--318]{chlewicki2024potencjal}.
+    \item \textbf{OpenAI Whisper:} Posiada bardzo wysoką skuteczność w rozpoznawaniu mowy polskiej wykształconą w procesie pre-treningu na wielojęzycznym korpusie, radząc sobie wyjątkowo dobrze ze złożoną fleksją oraz rzadkim słownictwem \cite[s.~23]{radford2023robust}.
     \item \textbf{Web Speech API:} Jakość rozpoznawania języka polskiego zależy bezpośrednio od silnika dostarczanego przez producenta danej przeglądarki i systemu operacyjnego \cite{mdnWebSpeechAPI}.
 \end{itemize}
 
@@ -161,10 +158,10 @@ W celu zachowania przejrzystości, syntetyczne porównanie przeanalizowanych roz
 \hline
 \textbf{Narzędzie} & \textbf{Sposób rozliczania} & \textbf{Diarizacja mówców} & \textbf{Adaptacja słownikowa} \\ \hline
 \textbf{Google STT} & za minutę audio & Tak & PhraseSet \\ \hline
-\textbf{Azure Speech} & za sekundę audio & Tak (do 35 mówców) & Custom Speech \\ \hline
+\textbf{Azure Speech} & za sekundę audio & Tak (do 35 mówców) & Phrase list \\ \hline
 \textbf{Amazon Transcribe} & za sekundę audio & Tak & Custom Vocabulary \\ \hline
-\textbf{Whisper / WhisperX} & Darmowy (koszt GPU) & Tak (przez WhisperX) & Prompt / Keywords \\ \hline
-\textbf{Web Speech API} & Darmowy (0 USD) & Brak & Speech\-Recognition\-Phrase \\ \hline
+\textbf{Whisper / WhisperX} & Darmowy (koszt GPU) & Tak (przez WhisperX) & Initial Prompt \\ \hline
+\textbf{Web Speech API} & Darmowy (0 USD) & Brak & Phrases, Boost \\ \hline
 \end{tabular}
 \end{table}
 

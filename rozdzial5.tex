@@ -1,17 +1,194 @@
-\section{Projekt i implementacja aplikacji React wykorzystującej Speech-to-Text}
-\subsection{Założenia funkcjonalne aplikacji}
-\subsection{Projekt architektury systemu}
 
-\subsubsection{Ogólny schemat przepływu danych}
+\section{Projekt i implementacja aplikacji wsadowej do ewaluacji systemów Speech-to-Text}
+\label{sec:implementation}
+W niniejszym rozdziale przedstawiono projekt oraz szczegóły implementacyjne autorskiego stanowiska badawczego przeznaczonego do ewaluacji i porównywania dokładności oraz wydajności silników rozpoznawania mowy. Aplikacja została zrealizowana w architekturze kliencko-serwerowej z podziałem na warstwę prezentacji stworzoną w bibliotece \textbf{React} (wraz z językiem \textbf{TypeScript} i narzędziem \textbf{Vite}) oraz backendowy orkiestrator zapytań zaimplementowany we frameworku \textbf{FastAPI}.
 
-\subsubsection{Integracja z wybranymi usługami STT}
+Głównym celem inżynieryjnym przy budowie aplikacji było stworzenie narzędzia pragmatycznego, zoptymalizowanego pod kątem wsadowego (\textit{ang.~Batch Processing}) przetwarzania nagrań audio oraz trwałej archiwizacji wyników. Zamiast wdrażania rozbudowanej infrastruktury produkcyjnej (rozproszonych kolejek zadań czy relacyjnych baz danych), w systemie postawiono na bezstanową komunikację REST/HTTP, asynchroniczną orkiestrację wywołań interfejsów API oraz przechowywanie wyników eksperymentów w ustrukturyzowanych plikach w formacie JSON.
 
-\subsubsection{Warstwa frontendu (React)}
+\subsection{Założenia funkcjonalne i niefunkcjonalne aplikacji}
+\label{subsec:requirements}
 
-\subsubsection{Ewentualna warstwa backendowa (FastAPI)}
-\subsection{Implementacja modułu nagrywania dźwięku}
-\subsection{Implementacja komunikacji z API STT}
-\subsection{Wizualizacja i edycja transkrypcji}
-\subsection{Obsługa błędów i fallbacki (np. Whisper offline)}
-\subsection{Testy funkcjonalne i wydajnościowe}
-\subsection{Wyzwania implementacyjne i sposoby ich rozwiązania}
+Na podstawie celów badawczych sformułowano zestaw wymagań funkcjonalnych oraz niefunkcjonalnych, determinujących architekturę i wybrane rozwiązania programistyczne.
+
+\subsubsection{Wymagania funkcjonalne}
+
+Aplikacja kliencka realizuje proces badawczy w ramach dwóch głównych widoków użytkownika: widoku akwizycji i przetwarzania (\textit{Transcribe file}) oraz czytnika zapisanych sesji (\textit{Results reader}):
+\begin{enumerate}
+    \item \textbf{Akwizycja nagrań audio i tekstu referencyjnego:} Interfejs umożliwia wskazanie lokalnego pliku dźwiękowego z dysku (w formatach WAV, MP3, FLAC lub M4A) za pomocą dedykowanego interfejsu wyboru pliku oraz przesłanie odpowiadającego mu tekstu referencyjnego z możliwością bezpośredniej edycji w polu tekstowym.
+    \item \textbf{Wstępne przetwarzanie tekstu (normalizacja):} Użytkownik posiada możliwość wyzwalania automatycznej tokenizacji i normalizacji tekstu wejściowego (usuwanie znaków interpunkcyjnych, konwersja do małych liter).
+    \item \textbf{Wybór i wielomodelowa orkiestracja STT:} System pozwala na równoczesne zaznaczenie wielu silników ASR za pomocą pól wyboru (\textit{ang.~checkboxes}). Obsługiwani dostawcy obejmują zarówno usługi chmurowe (Google Cloud STT v2, Azure Speech SDK, AWS Transcribe, OpenAI API), jak i modele uruchamiane lokalnie (OpenAI Whisper oraz WhisperX).
+    \item \textbf{Zintegrowana prezentacja i wizualizacja wyników:} Dla każdego uruchomionego modelu generowana jest niezależna karta wynikowa (\texttt{ModelRunCard}), prezentująca uzyskany tekst transkrypcji, wyliczone metryki błędu (WER, CER), czasy przetwarzania po stronie serwera (\texttt{rt\_time} / \texttt{compute\_time}) oraz wyliczony współczynnik czasu rzeczywistego (\textit{ang.~Real-Time Factor -- RTF}). Dodatkowo dostępna jest wizualizacja różnic tekstowych z kolorowym wyróżnieniem alokacji błędu (\texttt{diff-html}).
+    \item \textbf{Trwały zapis wyników eksperymentu:} Możliwość nadania własnej nazwy sesji badawczej i zapisania zagregowanego przebiegu wraz z surowymi odpowiedziami w strukturze katalogowej serwera (\texttt{outputs/runs/}).
+    \item \textbf{Przeglądanie i re-ewaluacja offline (\texttt{ComparePage}):} Moduł odczytu pozwala na wczytywanie historycznych sesji z dysku lub zewnętrznych plików JSON. Umożliwia on edycję tekstów referencyjnych oraz natychmiastowe przeliczenie wskaźników WER i CER bez konieczności ponownego wywoływania płatnych lub obciążających zasobowo interfejsów API dostawców STT.
+\end{enumerate}
+
+\subsubsection{Wymagania niefunkcjonalne}
+
+\begin{enumerate}
+    \item \textbf{Izolacja awarii pojedynczych dostawców:} Awaria, brak autoryzacji lub wyczerpanie limitów zapytań (\textit{ang.~quota}) po stronie jednego z zewnętrznych dostawców ASR nie może załamywać przetwarzania pozostałych modeli. Frontend wykorzystuje mechanizm \texttt{Promise.allSettled}, zapewniający rejestrację wyników cząstkowych.
+    \item \textbf{Płynność i asynchroniczność interfejsu (\textit{ang.~Non-blocking UI}):} Długotrwałe operacje przetwarzania audio po stronie backendu są wykonywane w puli wątków (\texttt{run\_in\_threadpool}), co zapobiega blokowaniu głównej pętli zdarzeń FastAPI. Po stronie frontendu cykl życia każdego wywołania odzwierciedlony jest przez dedykowany stan (\texttt{ModelRunState}) o wartościach \texttt{idle}, \texttt{loading}, \texttt{success} oraz \texttt{error}.
+    \item \textbf{Pragmatyczny model przechowywania danych:} Brak narzutu relacyjnej bazy danych na rzecz ustrukturyzowanych plików JSON. Zapewnia to bezpośrednią czytelność wyników, prostotę archiwizacji oraz łatwą przenośność danych pomiarowych.
+    \item \textbf{Zarządzanie plikami tymczasowymi i bezpieczeństwo:} Serwerowy cykl życia przesyłanych plików audio kontrolowany jest przez zarządcę kontekstu (\texttt{prepared\_}\allowbreak\texttt{audio\_}\allowbreak\texttt{file}), gwarantującego usunięcie plików tymczasowych z dysku po zakończeniu transkrypcji. Ścieżki zapisu wyników wyjściowych są walidowane pod kątem zagrożeń typu \textit{Path Traversal} (\texttt{resolve\_output\_path}).
+\end{enumerate}
+\subsection{Projekt architektury systemu i przepływu danych}
+\label{subsec:architecture_design}
+
+\subsubsection{Ogólny schemat przepływu danych (Data Flow)}
+% Opis przepływu: React (FormData) -> FastAPI -> Adaptery STT -> Zbiorczy JSON (surowy tekst, timery) -> React (wyliczenie WER/CER, diff HTML) -> Zapis do outputs/runs/.
+
+\label{subsubsec:data_flow}
+
+Przepływ danych w opracowanym systemie badawczym został zaprojektowany z zachowaniem zasad architektury klienta cienkiego (\textit{ang.~Thin Client}) oraz bezstanowego modelu komunikacji HTTP/REST. Cykl życia pojedynczej sesji pomiarowej – od momentu wprowadzenia plików wejściowych przez użytkownika do utrwalenia wyników na dysku – obejmuje sekwencję kroków realizowanych współbieżnie przez warstwę kliencką (React) oraz backendowy orkiestrator (FastAPI).
+
+Główny proces przepływu danych składa się z pięciu kluczowych etapów:
+
+\begin{enumerate}
+    \item \textbf{Przygotowanie żądania w interfejsie użytkownika (\textit{ang.~Payload Assembly}):}
+    Użytkownik w widoku głównym (\texttt{Transcribe file}) wskazuje plik dźwiękowy, wprowadza tekst referencyjny (\textit{ang.~Ground Truth}) oraz zaznacza listę docelowych silników ASR. Po wyzwoleniu procesu transkrypcji warstwa kliencka normalizuje wstępnie tekst referencyjny oraz pakuje dane binarne nagrania wraz z parametrami tekstowymi do obiektów \texttt{FormData} (z nagłówkiem \texttt{multipart/form-data}).
+
+    \item \textbf{Asynchroniczny transport i izolacja błędów (\textit{ang.~Concurrent Request Execution}):}
+    Dla każdego z wybranych modeli klient React inicjuje osobne żądanie HTTP POST do dedykowanego endpointu backendu (\texttt{/api/transcribe/\{model\_name\}}). W przypadku wyboru wielu modeli jednocześnie wywołania sieciowe są wykonywane równolegle z użyciem konstruktu \texttt{Promise.allSettled}. Zapewnia to odporność aplikacji na ewentualną awarię lub przekroczenie limitów czasu u pojedynczego dostawcy ASR.
+
+    \item \textbf{Przetwarzanie audio i orkiestracja w backendzie FastAPI:}
+    Po odebraniu żądania przez backend realizowana jest następująca sekwencja operacji serwerowych:
+    \begin{itemize}
+        \item \textbf{Zarządzanie plikiem tymczasowym:} Zapis strumienia binarnego na dysku w bezpiecznym zarządcy kontekstu oraz ewentualna konwersja formatów stratnych (np. M4A, MP3) do jednolitego formatu WAV o skompresowanym próbkowaniu przy użyciu narzędzia \texttt{ffmpeg}.
+        \item \textbf{Wywołanie adaptera STT:} Wyznaczenie kanonicznej nazwy modelu (\textit{ang.~model resolution}) i przekazanie pliku do właściwego adaptera w module \texttt{transcribe/}. Operacja przetwarzania audio jest uruchamiana w puli wątków (\texttt{run\_in\_}\linebreak\texttt{threadpool}), co zapobiega blokowaniu asynchronicznej pętli zdarzeń frameworka FastAPI.
+        \item \textbf{Pomiar wydajności i ewaluacja:} Rejestracja czasu wykonania transkrypcji za pomocą precyzyjnego licznika serwerowego (\texttt{time.perf\_counter()}) oraz opcjonalny odczyt długości audio (\texttt{ffprobe} / \texttt{wave}) w celu wyznaczenia wskaźnika RTF. W przypadku obecności tekstu referencyjnego serwer wylicza wstępne wartości metryk błędu (WER, CER) z użyciem biblioteki \texttt{jiwer}.
+    \end{itemize}
+
+    \item \textbf{Zwrot struktury JSON i aktualizacja stanu frontendu:}
+    Serwer zwraca odpowiedź w formacie JSON (\texttt{TranscriptionResponse}), zawierającą surowy tekst hipotezy, zmierzony czas przetwarzania, metryki oraz ścieżkę do wygenerowanego pliku wyjściowego. Po stronie frontendu odpowiedź jest mapowana do izolowanego stanu modelu (\texttt{ModelRunState}). Następnie aplikacja kliencka generuje widok zestawieniowy oraz pobiera z endpointu \texttt{/api/diff-html} wizualne porównanie różnic tekstowych z podświetleniem insercji, substytucji i delacji.
+
+    \item \textbf{Trwała archiwizacja sesji (\textit{ang.~Session Persistence}):}
+    Po zakończeniu przetwarzania użytkownik może wyzwolić zapis sesji badawczej. Klient przesyła zagregowane wyniki żądaniem POST na endpoint \texttt{/api/runs}. Backend sanitizuje nazwę sesji i zapisuje na serwerze strukturę plikową składającą się z pliku głównego \texttt{run.json} oraz osobnych plików JSON dla każdego z przetestowanych modeli w katalogu \texttt{outputs/runs/<run\_id>/}.
+
+\end{enumerate}
+
+Schematyczny przebieg przepływu danych pomiędzy poszczególnymi komponentami systemu przedstawia poniższa zależność:
+
+\begin{equation}
+\begin{aligned}
+    \text{React UI (FormData)}
+    &\xrightarrow{\text{HTTP POST}} \text{FastAPI Router}
+    \xrightarrow{\text{threadpool}} \text{Adapter STT}\\
+    &\xrightarrow{\text{JSON Response}} \text{React State / Diff}
+    \xrightarrow{\text{POST /api/runs}} \text{Zapis JSON}
+\end{aligned}
+\end{equation}
+
+\subsubsection{Warstwa backendowa (FastAPI)}
+\label{subsubsec:backend_layer}
+
+Warstwa serwerowa systemu zaimplementowana została we frameworku \textbf{FastAPI} i odpowiada za orkiestrację wywołań interfejsów STT, obsługę plików dźwiękowych, obliczanie metryk jakościowych oraz zarządzanie trwałością sesji pomiarowych. Kod źródłowy backendu zorganizowano w oparciu o podział modułowy na katalogi \texttt{core/}, \texttt{routers/}, \texttt{schemas/} oraz \texttt{services/}, uzupełnione o zewnętrzny moduł adapterów dostawców \texttt{transcribe/}.
+
+Główna architektura i kluczowe mechanizmy warstwy backendowej obejmują:
+
+\begin{itemize}
+    \item \textbf{Moduł konfiguracji i punkt wejścia (\texttt{core/config.py}, \texttt{main.py}):}
+    Fabryka aplikacji w \texttt{main.py} dokonuje rejestracji poszczególnych routerów dziedzinowych (\texttt{health}, \texttt{models}, \texttt{metrics}, \texttt{text}, \texttt{diff}, \texttt{runs}, \texttt{outputs}, \texttt{transcription}) oraz konfiguruje politykę dzielenia zasobów między pochodzeniami (\textit{ang.~Cross-Origin Resource Sharing -- CORS}). Pozwala to na zachowanie jednolitego punktu wejścia przy wysokiej modułowości kodu.
+
+    \item \textbf{Walidacja schematów danych (\texttt{schemas/}):}
+    Wszystkie struktury danych wchodzących i wychodzących z API oparto na klasach walidacyjnych biblioteki Pydantic (\textit{ang.~Pydantic Schemas}). Walidacja obejmuje typowanie parametrów żądań transkrypcji oraz ustrukturyzowanych odpowiedzi JSON (\texttt{TranscriptionResponse}, \texttt{RunApiResponse}), co eliminuje błędy strukturalne w komunikacji z klientem.
+
+    \item \textbf{Orkiestracja i obsługa adapterów STT (\texttt{services/}, \texttt{transcribe/}):}
+    Serwis \texttt{transcription\_service.py} odpowiada za rozwiązywanie kanonicznych nazw modeli (\textit{ang.~model resolution}) oraz przekazywanie ścieżki pliku dźwiękowego do właściwej funkcji transkrybującej. Dedykowane adaptery z modułu \texttt{transcribe/} izolują zależności od bibliotek SDK poszczególnych dostawców (Google, Azure, Amazon, OpenAI API) oraz wywołań modeli uruchamianych lokalnie (Whisper, WhisperX). Dzięki temu brak zainstalowanego SDK jednego z dostawców nie uniemożliwia działania pozostałych modeli.
+
+    \item \textbf{Współbieżność i wykonanie asynchronicznym  (\texttt{run\_in\_threadpool}):}
+    Ponieważ wywołania adapterów STT oraz operacje na plikach audio są procesami blokującymi, backend FastAPI deleguje ich wykonanie do puli wątków za pomocą funkcji \texttt{run\_in\_threadpool}. Zapewnia to responsywność asynchronicznej pętli zdarzeń (\textit{ang.~event loop}) serwera i umożliwia równoległą obsługę zapytań z klienta.
+
+    \item \textbf{Zarządzanie zasobami tymczasowymi i bezpieczeństwo ścieżek:}
+    Cykl życia wgrywanych plików audio kontrolowany jest przez zarządcę kontekstu \texttt{prepared\_}\allowbreak\texttt{audio\_}\allowbreak\texttt{file}. Gwarantuje on automatyczne usuwanie tymczasowych plików z dysku w bloku \texttt{finally} (z zastosowaniem ponawiania prób usuwania w środowisku Windows). Ponadto dostęp do zapisanych plików wyjściowych jest chroniony przez funkcję \texttt{resolve\_}\allowbreak\texttt{output\_path}, która weryfikuje, czy wskazana ścieżka nie wykracza poza katalog bazowy \texttt{outputs/}, chroniąc system przed atakami typu \textit{Path Traversal}.
+
+    \item \textbf{Leniwe ładowanie i buforowanie modeli lokalnych (\texttt{\_local\_whisper\_clients}):}
+    W przypadku modeli uruchamianych lokalnie (np. OpenAI Whisper), inicjalizacja i ładowanie wag z dysku do pamięci RAM/VRAM stanowi znaczny narzut czasowy. W backendzie zaimplementowano mechanizm leniwego ładowania z buforowaniem w pamięci podręcznej procesu. Dzięki temu instancja danego rozmiaru modelu (np. \texttt{small}, \texttt{medium}) jest ładowana tylko przy pierwszym zapytaniu, a kolejne wywołania korzystają z gotowego obiektu w pamięci.
+\end{itemize}
+
+\subsubsection{Warstwa frontendu (React + TypeScript + Vite)}
+\label{subsubsec:frontend_layer}
+
+Warstwa kliencka systemu została zbudowana z wykorzystaniem biblioteki \textbf{React} (w wersji 19), języka \textbf{TypeScript} oraz narzędzia budowania \textbf{Vite}. Odpowiada ona za interakcję z użytkownikiem, zarządzanie złożonym stanem asynchronicznym, prezentację wyników oraz bezpieczną walidację i przygotowanie danych przed wysłaniem do serwera.
+
+Struktura oraz kluczowe rozwiązania architektoniczne warstwy frontendu obejmują:
+
+\begin{itemize}
+    \item \textbf{Routing i układ interfejsu:}
+    Główny punkt wejścia \texttt{main.tsx} renderuje aplikację w trybie ścisłym (\texttt{StrictMode}). Układ trasy zdefiniowany w \texttt{App.tsx} bazuje na komponentowym szablonie \texttt{AppLayout}, w ramach którego zdefiniowano routowanie do poszczególnych widoków: głównego widoku transkrypcji (\texttt{Transcribe file}) oraz czytnika zapisanych wyników (\texttt{Results reader}).
+    \item \textbf{Warstwa żądań HTTP (\texttt{requests/api.ts}):}
+    Komunikacja z backendem realizowana jest za pośrednictwem wspólnej instancji klienta Axios. Bazowy adres URL pobierany jest ze zmiennej środowiskowej \texttt{VITE\_API\_BASE\_URL} (z domyślnym odwołaniem do \texttt{http://127.0.0.1:8000}). Moduły z katalogu \texttt{requests/} realizują automatyczne mapowanie nazw właściwości z konwencji \textit{camelCase} języka TypeScript na konwencję z podkreślnikami \textit{snake\_case} wymaganą przez API FastAPI.
+% todo - ujednolic czy uzywamy main.tsx i comparepage czy transcribe file i results reader
+
+    \item \textbf{Modelowanie stanu i izolacja wyników (\texttt{ModelRunState}):}
+    Stan każdego silnika ASR zarządzany jest w sposób izolowany w ramach obiektu \texttt{ModelRunState}. Przechowuje on wskaźnik statusu asynchronicznego (\texttt{idle}, \texttt{loading}, \texttt{success}, \texttt{error}), aktualny tekst transkrypcji, wyliczone metryki, czasy wykonania oraz flagi odróżniające stan oczekiwania na transkrypcję od oczekiwania na ponowne przeliczenie metryk. Całość stanu modeli utrzymywana jest w jednym obiekcie poprawek (\texttt{setPatchesByModel}), co zapobiega powstawaniu niespójności przy częściowych aktualizacjach.
+
+    \item \textbf{Równoległa orkiestracja żądań (\texttt{Promise.allSettled}):}
+    Wywołanie transkrypcji dla wielu wyznaczonych modeli realizowane jest równolegle przy użyciu konstruktu \texttt{Promise.allSettled}. Wyeliminowano w ten sposób ryzyko, że awaria lub opóźnienie pojedynczego API dostawcy STT zablokuje prezentację wyników z pozostałych, poprawnie działających silników.
+
+    \item \textbf{Wersjonowanie tekstu referencyjnego i zarządzanie nieaktualnymi metrykami:}
+    W celu uniknięcia niepotrzebnego ponawiania kosztownych operacji STT po edycji tekstu referencyjnego zastosowano mechanizm autorskiego hooka z licznikiem monotonicznym (\texttt{useReferenceText}). Zmiana tekstu zwiększa numer wersji referencji; wynik przeliczonych metryk pamięta wersję, dla której został wyznaczony. W przypadku rozbieżności wersji interfejs oznacza metryki jako nieaktualne i umożliwia ich szybkie odświeżenie dedykowanym zapytaniem do endpointu \texttt{/api/metrics}.
+
+    \item \textbf{Zapis sesji i integracja z czytnikiem wyników (\texttt{ComparePage}):}
+    Proces trwałego zapisu sesji realizowany jest dwuetapowo: najpierw przesyłany jest zbiorczy rekord na endpoint \texttt{/api/runs}, a następnie w przypadku zmienionych metryk wywoływana jest aktualizacja plików wyjściowych (\texttt{/api/output/update}). Czytnik wyników (\texttt{ComparePage}) umożliwia odczyt i walidację ustrukturyzowanych plików JSON bezpośrednio po stronie przeglądarki z użyciem natywnego API \texttt{File.text()}.
+\end{itemize}
+\subsection{Implementacja akwizycji danych i przygotowania tekstu}
+\label{subsec:audio_text_acquisition}
+
+Kluczowym etapem początkowym w procesie ewaluacji systemów ASR jest wprowadzenie oraz odpowiednie przygotowanie materiału badawczego: nagrania dźwiękowego oraz odpowiadającego mu tekstu referencyjnego (\textit{ang.~Ground Truth}). W ramach opracowanego interfejsu w widoku \texttt{Transcribe file} za realizację tego zadania odpowiada dedykowana sekcja wprowadzania danych (\textit{ang.~Input Sources}).
+
+\subsubsection{Komponent akwizycji plików audio (FilePicker)}
+
+Ze względu na wymóg zachowania wysokiej modularności w paradygmacie \textbf{Atomic Design}, proces wyboru pliku audio został wydzielony do osobnego komponentu \texttt{FilePicker}. Zastosowane w nim rozwiązania programistyczne obejmują:
+
+\begin{itemize}
+    \item \textbf{Encapsulacja natywnego pola wyboru:} Komponent wykorzystuje natywny element \texttt{input}, który ze względów estetycznych i stylizacyjnych został ukryty w arkuszu stylów (\texttt{FilePicker.module.css} pod klasą \texttt{nativeInput}).
+    Referencja React (\texttt{useRef<}\allowbreak\texttt{HTMLInputElement>}) umożliwia dostęp do pola wejściowego. Pole jest aktywowane po kliknięciu widocznego przycisku \texttt{Button}.
+    \item \textbf{Dostępność i unikalność identyfikatorów (\texttt{useId}):} W celu zapewnienia zgodności ze standardami dostępności (\textit{ang.~Accessibility -- a11y}), etykieta opisowa \texttt{FieldLabel} łączona jest z polem wejściowym za pomocą dynamicznie generowanego identyfikatora z wykorzystaniem natywnego hooka \texttt{useId()}.
+    \item \textbf{Walidacja rozszerzeń i warianty prezentacji:} Komponent przyjmuje filtr akceptowalnych formatów MIME (\texttt{accept}), co zapobiega wskazaniu plików o nieobsługiwanych typach. Dodatkowo obsługuje parametr \texttt{compact}, umożliwiający warunkowe opakowanie interfejsu w panel kontenerowy (\texttt{Panel}) ze stylizowaną elewacją (\texttt{surface="muted"}).
+\end{itemize}
+
+
+
+
+Wybrany obiekt typu \texttt{File} przekazywany jest do rodzica za pośrednictwem funkcji zwrotnej \texttt{onFileChange}, co umożliwia natychmiastowe odczytanie metadanych pliku (rozmiar, nazwa) oraz weryfikację jego nagłówków po stronie przeglądarki.
+
+\subsubsection{Wprowadzanie, edycja i wersjonowanie tekstu referencyjnego}
+
+Tekst referencyjny stanowi wzorzec bezwzględny, naprzeciw którego oceniana jest poprawność transkrypcji generowanych przez silniki ASR. W systemie zaimplementowano elastyczny mechanizm jego wprowadzania:
+\begin{enumerate}
+    \item \textbf{Edycja bezpośrednia oraz odczyt z pliku:} Użytkownik może wkleić tekst ręcznie w polu edycyjnym lub wczytać go bezpośrednio z pliku tekstowego z wykorzystaniem metody \texttt{File.text()}.
+    \item \textbf{Monotoniczne wersjonowanie tekstu (\texttt{useReferenceText}):} Aby uniknąć kosztownego i niezamierzonego ponawiania transkrypcji po drobnej zmianie tekstu referencyjnego, w aplikacji klienckiej wdrożono autorski hook \texttt{useReferenceText}. Każda edycja ciągu znaków inkrementuje wewnętrzny licznik wersji (\texttt{versionRef.current} \texttt{+= 1}). Wynik wyliczonych metryk pamięta numer wersji referencji, dla której został wyznaczony. Jeżeli wersje się różnią, interfejs oznacza metryki jako nieaktualne, umożliwiając ich wywołanie na żądanie.
+\end{enumerate}
+
+\subsubsection{Normalizacja tekstu i tokenizacja na potrzeby wyliczania WER/CER}
+
+Wyznaczanie metryk dokładnościowych wymaga ujednolicenia formatu tekstu referencyjnego oraz hipotez wygenerowanych przez modele, aby ewentualne różnice w interpunkcji czy wielkości liter nie zniekształcały realnego wyniku błędu rozpoznawania treści.
+
+Po stronie backendu FastAPI funkcja \texttt{normalize\_for\_metrics} realizuje następującą sekwencję przekształceń:
+\begin{itemize}
+    \item konwersja całego ciągu znaków do małych liter (\textit{ang.~lowercasing}),
+    \item usunięcie znaków interpunkcyjnych oraz symboli specjalnych za pomocą wyrażeń regularnych,
+    \item redukcja wielokrotnych spacji oraz usunięcie białych znaków z początkowych i końcowych sekwencji tekstu (\textit{ang.~stripping}).
+\end{itemize}
+
+W interfejsie użytkownika w widoku \texttt{Transcribe file} udostępniono dedykowane przyciski umożliwiające ręczne wyzwolenie tokenizacji tekstu wejściowego oraz wymuszenie ponownego przeliczenia metryk (\textit{ang.~refresh metrics}). W przypadku wywołania endpointu \texttt{/api/metrics} z flagą \texttt{normalize=True}, backend wykonuje tożsamą normalizację na obu tekstach przed obliczeniem odległości Levenshteina za pomocą biblioteki \texttt{jiwer}.
+
+
+\subsection{Implementacja orkiestracji i komunikacji z usługami STT}
+\label{subsec:stt_api_communication_impl}
+% Przesyłanie nagrań przez multipart/form-data, równoległe wywołania adapterów ASR w FastAPI,
+% odporność na awarie pojedynczych modeli (partial success), pomiar czasu przetwarzania serwera.
+
+\subsection{Wizualizacja wyników, edycja i analiza metryk}
+\label{subsec:visualization_diff_impl}
+% Karty wyników (ModelCard), algorytm podświetlania różnic (diff HTML), wyliczanie metryk WER/CER i RTF,
+% odświeżanie metryk oraz wersjonowanie stanu wyliczeń na frontendzie.
+
+\subsection{Moduł zapisu sesji oraz czytnik wyników (Results Reader)}
+\label{subsec:results_reader_impl}
+% Zapis struktur JSON w katalogu outputs/runs/, odczyt zapisanego przebiegu w widoku ComparePage,
+% możliwość edycji tekstu referencyjnego i przeliczania metryk offline (bez ponownego odpalaia API).
+
+\subsection{Obsługa błędów, bezpieczeństwo i wydajność}
+\label{subsec:error_handling_performance}
+% Bezpieczne czyszczenie plików tymczasowych (context manager w Pythonie), walidacja ścieżek plików,
+% obsługa limitów API i zapobieganie wyciekom pamięci po stronie klienta.

@@ -1,15 +1,88 @@
-\section{Technologia React jako platforma implementacji}
-\subsection{Architektura React – komponenty, hooki, state management}
-% to opisujemy w skrócie, bo to nie jest temat pracy, ale warto wspomnieć o tym,
-% że React jest popularnym frameworkiem do tworzenia interfejsów użytkownika,
-% który pozwala na łatwą integrację z różnymi API i usługami zewnętrznymi.
-\subsection{Integracja z API i usługami zewnętrznymi}
-%
-\subsection{Komunikacja w czasie rzeczywistym (WebSocket, Streaming, REST)}
-% to w przypadku jeśli zrobię implementacje wersji live
-%
-\subsection{Obsługa audio w przeglądarce (MediaDevices, AudioContext, MediaRecorder)}
-% to samo
-%
-\subsection{Wymagania wydajnościowe po stronie frontendu}
-% to piszemy w przypadku jesli zrobie wersje live
+% \section{Technologia React jako platforma implementacji systemu wsadowego}
+% \label{sec:react_batch_platform}
+
+% Projektowanie nowoczesnych webowych aplikacji badawczych przeznaczonych do wsadowej (ang. \textit{Batch Processing}) analizy nagrań dźwiękowych oraz ewaluacji jakościowej systemów ASR wymaga zastosowania stosu technologicznego zapewniającego wysoką modułowość, przewidywalny przepływ danych asynchronicznych oraz wydajne renderowanie interfejsu użytkownika. W ramach niniejszej pracy jako platformę kliencką wykorzystano bibliotekę \textbf{React} wraz z językiem \textbf{TypeScript} oraz środowiskiem budowania \textbf{Vite}.
+
+% Wywodzący się z paradygmatu deklaratywnego React umożliwia sprawną obsługę złożonych stanów aplikacji -- od akwizycji i walidacji lokalnych plików audio, przez orkiestrację asynchronicznych żądań HTTP/REST do backendu opartego na frameworku FastAPI, aż po dynamiczne wyliczanie metryk dokładnościowych (WER, CER) oraz wizualizację porównawczą uzyskanych transkrypcji.
+
+% \subsection{Architektura React w przetwarzaniu wsadowym: komponenty, hooki i state management}
+% \label{subsec:react_architecture}
+% Projekt struktury frontendu oparto na separacji odpowiedzialności pomiędzy warstwą prezentacji (UI) a logiką biznesową i sieciową. Pozwala to na utrzymanie wysokiej czytelności kodu, łatwą rozszerzalność o nowe silniki transkrypcyjne oraz eliminację niepotrzebnych operacji ponownego renderowania (\textit{re-rendering}) w drzewie komponentów.
+
+
+% \subsubsection{Podział architektoniczny w paradygmacie Atomic Design}
+
+% W celu zapewnienia spójności wizualnej oraz ponownego wykorzystania kodu w projekcie zastosowano wzorzec strukturalny \textbf{Atomic Design}. Komponenty interfejsu podzielono na hierarchiczne warstwy z wyizolowanymi stylami przy użyciu \textbf{CSS Modules}:
+% \begin{itemize}
+%     \item \textbf{Atomy i cząsteczki (\textit{Atoms \& Molecules}):} Podstawowe elementy budulcowe interfejsu, takie jak przyciski kontrolne, wskaźniki statusu przetwarzania (\textit{status badges}), paski postępu przesyłania plików (\textit{progress bars}) oraz elementy graficzne zintegrowane z biblioteką \texttt{lucide-react}.
+%     \item \textbf{Organizmy i widoki (\textit{Organisms \& Views}):} Złożone moduły odpowiadające za poszczególne kroki procesu eksperymentalnego:
+%     \begin{itemize}
+%         \item \texttt{FileUploader}: komponent akwizycji danych, obsługujący przeciąganie plików (\textit{Drag \& Drop}), walidację nagłówków MIME oraz rozmiarów nagrań.
+%         \item \texttt{ModelSelector}: panel konfiguracyjny pozwalający użytkownikowi na wskazanie docelowych silników ASR (m.in. Google Cloud STT, Azure Speech, AWS Transcribe, OpenAI Whisper, WhisperX).
+%         \item \texttt{TranscriptionViewer}: widok tabelaryczno-zestawieniowy prezentujący hipotezy tekstowe poszczególnych modeli naprzeciwko tekstu referencyjnego (\textit{Ground Truth}).
+%         \item \texttt{MetricsDashboard}: panel analityczny wizualizujący metryki jakościowe (Word Error Rate, Character Error Rate) oraz wydajnościowe (Real-Time Factor).
+%     \end{itemize}
+% \end{itemize}
+
+% \subsubsection{Reaktywne zarządzanie stanem i cykl życia zadania batchowego}
+
+% W przetwarzaniu wsadowym stan aplikacji dynamicznie ewoluuje wraz ze zmianą etapu przetwarzania nagrania. W systemie zdefiniowano ścisły cykl życia zadania (\textit{Task Lifecycle State}), reprezentowany przez skończony automat stanów:
+% \begin{equation}
+% \text{IDLE} \longrightarrow \text{UPLOADING} \longrightarrow \text{PROCESSING} \longrightarrow \text{SUCCESS} \ \big| \ \text{ERROR}
+% \end{equation}
+% Zarządzanie stanem zorganizowano w sposób dwupoziomowy:
+% \begin{enumerate}
+%     \item \textbf{Stan lokalny (\textit{Local State}):} Obsługiwany za pomocą hooków \texttt{useState} oraz \texttt{useReducer} wewnątrz poszczególnych formularzy i wskaźników postępu.
+%     \item \textbf{Stan globalny i pamięć podręczna zapytań (\textit{Global Store / React Query}):} Utrzymuje zagregowane wyniki badania (teksty transkrypcji, metryki, czasy wykonania). Dzięki temu nawigacja pomiędzy poszczególnymi zakładkami systemu nie powoduje utraty zgromadzonych danych pomiarowych ani zbędnych ponownych strzałów do API.
+% \end{enumerate}
+
+% \subsection{Integracja z REST API i orkiestratorem FastAPI}
+% \label{subsec:api_integration}
+
+% % ------------------------------------------------------------------------------
+% % OPIS SUBSEKCJI 3.2:
+% % Opis modelu integracji frontendu z backendem FastAPI (klasyfikowanym wg schematu
+% % core/routers/schemas/services). Skupienie na przesyłaniu plików oraz odczycie JSON.
+% % ------------------------------------------------------------------------------
+
+% \subsubsection{Architektura interfejsu REST i przesyłanie formularzy multipart/form-data}
+% % - Opis komunikacji klienta React z endpointami FastAPI (`/transcribe/`, `/evaluate/`).
+% % - Konstrukcja żądań HTTP POST wykorzystujących obiekty FormData do przesyłania plików binarnych audio.
+% % - Konfiguracja nagłówków zapytania (Content-Type: multipart/form-data) oraz parametryzacji wyboru modeli.
+
+% \subsubsection{Struktura wymiany danych i walidacja schematów JSON}
+% % - Definicja kontraktu API pomiędzy frontendem a backendem (dopasowanie do Pydantic Schemas w FastAPI).
+% % - Struktura odpowiedzi JSON: surowy tekst transkrypcji, zmapowane znaczniki czasu, metryki wydajnościowe (opóźnienie serwera, czas wnioskowania).
+% % - Bezpieczeństwo typów po stronie frontendu przy użyciu interfejsów i typów TypeScript.
+
+% \subsection{Asynchroniczny model komunikacji i obsługa długotrwałych zadań (Batch Jobs)}
+% \label{subsec:async_communication}
+
+% % ------------------------------------------------------------------------------
+% % OPIS SUBSEKCJI 3.3:
+% % Omówienie wyzwań związanych z obsługą zadań wymagających znacznego czasu GPU
+% % (np. transkrypcja pliku 10-minutowego przez model Whisper large-v3).
+% % ------------------------------------------------------------------------------
+
+% \subsubsection{Obsługa opóźnień (latency) i stanów ładowania w interfejsie użytkownika}
+% % - Techniki zapobiegania blokowaniu interfejsu użytkownika (Non-blocking UI) podczas oczekiwania na odpowiedź HTTP.
+% % - Prezentacja wskaźników ładowania (spinners, skeleton loaders, progress bar) oraz sygnałów dźwiękowych po zakończeniu przetwarzania (audio cues z katalogu public/).
+
+% \subsubsection{Strategie powtórzeń (Retry Policy) oraz obsługa błędów sieciowych i serwerowych}
+% % - Obsługa awarii API (np. przekroczenie czasu oczekiwania HTTP Timeout, błąd 500 w backendzie FastAPI, brak pamięci VRAM).
+% % - Zastosowanie mechanizmów ponawiania prób (Exponential Backoff w React Query).
+% % - Prezentacja komunikatów o błędach użytkownikowi w czytelnej formie (Toast notifications, Alert boxes).
+
+% \subsection{Obsługa i walidacja plików audio po stronie przeglądarki}
+% \label{subsec:browser_audio_handling}
+
+% % ------------------------------------------------------------------------------
+% % OPIS SUBSEKCJI 3.4:
+% % Praca z plikami na dysku lokalnym użytkownika przy wykorzystaniu standardowych Web API.
+% % Przeniesienie akcentu z nagrywania na żywo (MediaRecorder) na pracę z obiektami File/Blob.
+% % ------------------------------------------------------------------------------
+
+% \subsubsection{Przetwarzanie plików w interfejsie przeglądarkowym (File API, Blob, Drag \& Drop)}
+% % - Wykorzystanie natywnego File API oraz obiektów Blob w przeglądarce.
+% % - Walidacja wstępna po stronie klienta: weryfikacja dopuszczalnych rozszerzeń (WAV, MP3, FLAC, M4A) oraz maksymalnego rozmiaru pliku.
+% % - Podgląd odtwarzania pliku audio przed wysłaniem za pomocą elementu
