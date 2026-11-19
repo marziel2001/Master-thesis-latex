@@ -1,6 +1,10 @@
 \documentclass[12pt]{article}
 \usepackage[T1]{fontenc} % for polish characters
 \usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{placeins}
+\AddToHook{cmd/section/before}{\FloatBarrier}
+\AddToHook{cmd/subsection/before}{\FloatBarrier}
+\AddToHook{cmd/subsubsection/before}{\FloatBarrier}
 
 % \usepackage[protrusion=true,expansion=true]{microtype}
 \hbadness=500

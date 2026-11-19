@@ -89,32 +89,7 @@ Analiza zagregowanych wskaźników błędu na poziomie słów (\textbf{WER}) ora
 
 Wykres~\ref{fig:wer_cer_comparison} przedstawia zbiorcze zestawienie relatywnych wyników dokładnościowych testowanych silników ASR.
 
-\begin{figure}[h!]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    ybar,
-    symbolic x coords={WhisperX, GPT-4o, Google, Azure, Amazon, Whisper Off.},
-    xtick=data,
-    nodes near coords,
-    nodes near coords align={vertical},
-    ylabel={Wskaźnik błędu (\%)},
-    ymin=0, ymax=35,
-    bar width=12pt,
-    enlarge x limits=0.15,
-    legend pos=north west,
-    x tick label style={rotate=30, anchor=east},
-    width=0.95\textwidth,
-    height=7cm
-]
-\addplot coordinates {(WhisperX, 11.4) (GPT-4o, 12.2) (Google, 13.3) (Whisper Off., 16.9) (Azure, 18.0) (Amazon, 19.9)};
-\addplot coordinates {(WhisperX, 4.6) (GPT-4o, 4.7) (Azure, 7.6) (Amazon, 7.7) (Google, 8.8) (Whisper Off., 10.1)};
-\legend{Średni WER (\%), Średni CER (\%)}
-\end{axis}
-\end{tikzpicture}
-\caption{Porównanie wskaźników błędu WER oraz CER dla badanych modeli ASR.}
-\label{fig:wer_cer_comparison}
-\end{figure}
+\input{wykresy/wykresWerCer.tex}
 
 
 \subsubsection{Wydajność czasowa i opóźnienia (Real-Time Factor -- RTF)}
@@ -127,6 +102,8 @@ Pomiar czasu przetwarzania serwerowego (\texttt{compute\_time} / \texttt{rt\_tim
     \item \textbf{Najniższa wydajność:} Najwyższy (najgorszy) wskaźnik RTF odnotowano dla lokalnego modelu \textbf{Whisper Offline}. Narzut związany z ładowaniem wag oraz sekwencyjnym dekodowaniem w architekturach o dużej liczbie parametrów powoduje, że modele lokalne wykazują wielokrotnie wyższe opóźnienia niż chmurowe interfejsy API.
 \end{itemize}
 
+
+
 \subsubsection{Wpływ zakłóceń akustycznych (szum otoczenia)}
 \label{subsubsec:noise_impact}
 
@@ -138,6 +115,11 @@ Ocena odporności systemów ASR na zakłócenia obejmowała porównanie nagrań 
     \item \textbf{Najsłabsza odporność:} Usługa \textbf{Microsoft Azure Speech Services} osiągnęła najgorsze wyniki w warunkach hałasu, wykazując wskaźnik WER o około $56\%$ wyższy w porównaniu do GPT-4o (osiągając WER $\approx 0{,}25$).
     \item \textbf{Kontrolowana próbka laboratoryjna (6 nagrań):} W precyzyjnie kontrolowanej próbce nagrań bez błędów czytających hałas o natężeniu zbliżonym do mowy wywołał wzrost WER od $\sim 20\%$ do $\sim 501\%$ (średnio o ok. $200\%$). Najlepsze wyniki osiągnęły \textbf{WhisperX}, \textbf{GPT-4o} oraz \textbf{Amazon Transcribe}, podczas gdy \textbf{Whisper Offline} i \textbf{Azure} były o około $150\%$ gorsze od lidera.
 \end{itemize}
+
+ 
+Wykres~\ref{fig:wer_cer_comparison_noise} przedstawia porównanie błędu WER dla badanych modeli ASR w warunkach czystego tekstu oraz tekstu z hałasem.
+
+\input{wykresy/wykresWerNoise.tex}
 
 \subsubsection{Wpływ specyfiki materiału słownego na jakość transkrypcji}
 \label{subsubsec:text_type_impact}
@@ -152,7 +134,6 @@ Wartości wskaźnika WER ulegały znacznej zmianie w zależności od stopnia sko
 \end{enumerate}
 
 % todo - wszedzie dodac wykresy zeby sie nie zmarnowaly
-% dotąd sprawdzone
 \subsection{Analiza jakościowa i statystyczna błędów transkrypcji}
 \label{subsec:error_analysis}
 
@@ -166,13 +147,15 @@ Przeanalizowany materiał badawczy pozwolił na wyróżnienie czterech głównyc
 Najczęstszą przyczyną błędów w tekstach lektorskich i mówionych były substytucje fonetyczne, wynikające z bliskości artykulacyjnej poszczególnych głosek języka polskiego:
 
 \begin{itemize}
-    \item \textbf{----- i rozkład samogłosek nosowych:} Obserwowano powszechną tendencję modeli do zastępowania samogłoski nosowej \textit{„ę”} sekwencją \textit{„en”}. Przykładem jest transkrypcja wyrazu \textit{„cętkowane”} jako \textit{„centkowane”} (model OpenAI GPT-4o Transcribe). Mimo że z punktu widzenia fonetyki mowy żywej wymowa ta bywa zbliżona, z punktu widzenia algorytmu Levenshteina generuje to błąd substytucji na poziomie słowa.
-    \item \textbf{Ubezdźwięcznienia spółgłoskowych zbitek:} Występowało zastępowanie spółgłosek dźwięcznych ich bezdźwięcznymi odpowiednikami (np. zmiana \textit{„b”} na \textit{„p”}). W próbce prozy lektorskiej zarejestrowano zamianę słowa \textit{„izdebki”} na \textit{„izdepki”}.
-    \item \textbf{Deformacje semantyczne w hałasie:} W warunkach zakłóconych (nagranie z szumem AGD/muzyki i większej odległości mikrofonu) nawet zaawansowane modele generowały hipotezy całkowicie odległe znaczeniowo od oryginału, dopasowując słowa wyłącznie na podstawie zbliżonego konturu intonacyjnego. W transkrypcji z modelu WhisperX odnotowano m.in. zamiany:
+    \item \textbf{Denazalizacja samogłosek nosowych:} Obserwowano powszechną tendencję modeli do zastępowania samogłoski nosowej \textit{„ę”} sekwencją \textit{„en”}. Przykładem jest transkrypcja wyrazu \textit{„cętkowane”} jako \textit{„centkowane”} (model OpenAI GPT-4o Transcribe). Mimo że z punktu widzenia fonetyki mowy żywej wymowa ta bywa zbliżona, z punktu widzenia algorytmu Levenshteina generuje to błąd substytucji na poziomie słowa.
+    \item \textbf{Ubezdźwięcznienia:} Występowało zastępowanie spółgłosek dźwięcznych ich bezdźwięcznymi odpowiednikami (np. zmiana \textit{„b”} na \textit{„p”}). W próbce prozy lektorskiej zarejestrowano zamianę słowa \textit{„izdebki”} na \textit{„izdepki”}.
+    \item \textbf{Subsytucje:} W warunkach zakłóconych (nagranie z szumem AGD/muzyki i większej odległości mikrofonu) nawet zaawansowane modele generowały hipotezy całkowicie odległe znaczeniowo od oryginału, dopasowując słowa wyłącznie na podstawie zbliżonego konturu intonacyjnego. W transkrypcji z modelu WhisperX odnotowano m.in. zamiany:
     \begin{itemize}
         \item \textit{„bosymi nóżkami”} $\rightarrow$ \textit{„posyła puszczami”},
-        \item \textit{„zbiegła co tchu”} $\rightarrow$ \textit{„jego co długo trwa”},
+        \item \textit{„biegła co tchu po twardej”} $\rightarrow$ \textit{„jego co długo trwa w tej”},
         \item \textit{„cierpkie”} $\rightarrow$ \textit{„ciemnie”}.
+        \item \textit{„krople"} $\rightarrow$ \textit{„kotle"}.
+        \item \textit{„wykrzywiały"} $\rightarrow$ \textit{„wytrzymiały"}.
     \end{itemize}
 \end{itemize}
 
@@ -193,8 +176,8 @@ Test przeprowadzony na materiale obejmującym harmonogram wydarzeń w ZOO we Wro
 W nagraniach zawierających specyficzne nazwy własne oraz egzotyczne pojęcia (harmonogram ZOO) silniki ASR wykazywały poważne problemy z wyznaczaniem granic słów (\textit{ang.~word segmentation}):
 
 \begin{itemize}
-    \item \textbf{Zniekształcenia rzadkich słów:} Nazwa gatunkowa \textit{„mangaby”} została zinterpretowana przez Azure jako \textit{„maby”} lub rozbita na \textit{„man gawy”}.
-    \item \textbf{Błędy scalania i segmentacji fraz:} Fraza \textit{„zoo za mostkiem”} została błędnie scalona do postaci \textit{„zookiem”} lub zmieniona na \textit{„zolza”}, natomiast sekwencja \textit{„czarnoszyje na stawie”} przyjęła postać \textit{„czarno szyje nastawię”}.
+    \item \textbf{Zniekształcenia rzadkich słów:} Nazwa gatunkowa \textit{„mangaby”} została zinterpretowana przez Azure jako \textit{„maby”}.
+    \item \textbf{Błędy scalania i segmentacji fraz:} Fraza \textit{„zoo za mostkiem”} została błędnie scalona do postaci \textit{„zookiem”} lub zmieniona na \textit{„zoologomostkiem ”}, natomiast sekwencja \textit{„czarnoszyje na stawie”} przyjęła postać \textit{„czarno szyje nastawię”}.
 \end{itemize}
 
 \subsubsection{Halucynacje, pętlenie i uszkodzenia strumienia}
@@ -203,8 +186,9 @@ W nagraniach zawierających specyficzne nazwy własne oraz egzotyczne pojęcia (
 Najcięższe błędy strukturalne odnotowano przy analizie skrajnych przypadków testowych (długie nagrania, pauzy w mowie oraz trudne frazy phonetyczne w łamańcach językowych):
 
 \begin{itemize}
-    \item \textbf{Halucynacje i pętlenie (Whisper Offline):} Natywna, bezstanowa implementacja modelu Whisper Large-v3 przy braku wbudowanego mechanizmu dociągania fonetycznego wykazuje tendencję do zapętlania się na ciszy lub długich pauzach. W analizowanym materiale model po napotkaniu pauzy w audio zaczął powielać i generować całe nadmiarowe akapity tekstu, nieobecne w oryginalnym nagraniu (duże bloki insercji). Zjawisko to spowodowało drastyczny wzrost wskaźnika CER aż o $120\%$ względem modelu WhisperX.
-    \item \textbf{Pominięcia tekstu i znaki obcych alfabetów (Google STT):} W próbie łamańców językowych o bardzo gęstej artykulacji w modelu Google Cloud Speech-to-Text v2 zaobserwowano sporadyczne całkowite pomijanie złożonych sekwencji wyrazowych (\textit{ang.~deletion errors}). Ponadto w skrajnych przypadkach model wstawiał w miejsce nierozpoznanej frazy pojedyncze znaki pochodzące z obcych alfabetów (np. ze pisma Devanagari), co wskazuje na błędy w dekodowaniu tokenów przy braku pewności klasyfikatora.
+    \item \textbf{Halucynacje i pętlenie (Whisper Offline):} Natywna implementacja modelu Whisper Large-v3, pozbawiona wstępnej filtracji ciszy za pomocą modułu VAD (\textit{ang.~Voice Activity Detection}), wykazuje tendencję do zapętlania się oraz halucynowania na długich pauzach i szumach otoczenia. W analizowanym materiale autoregresywny dekoder po napotkaniu fragmentów bez mowy powielał wygenerowane wcześniej sekwencje i tworzył nadmiarowe akapity tekstu nieobecne w oryginalnym nagraniu (duże bloki insercji).
+    \item \textbf{Pominięcia tekstu i znaki obcych alfabetów (Google STT):} W próbie łamańców językowych o bardzo gęstej artykulacji w modelu Google Cloud Speech-to-Text v2 zaobserwowano sporadyczne całkowite pomijanie złożonych sekwencji wyrazowych (\textit{ang.~deletion errors}). Ponadto w skrajnych przypadkach model wstawiał w miejsce nierozpoznanej frazy pojedyncze znaki pochodzące z obcych alfabetów, co wskazuje na błędy w dekodowaniu tokenów przy braku pewności klasyfikatora.
 \end{itemize}
+% dotąd sprawdzone
 
 \subsection{Wnioski z badań}

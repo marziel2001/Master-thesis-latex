@@ -1,0 +1,26 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    ybar=4pt,
+    symbolic x coords={WhisperX, GPT-4o, Google, Azure, Amazon, Whisper Off.},
+    xtick=data,
+    nodes near coords={\pgfmathprintnumber[fixed,precision=0]{\pgfplotspointmeta}},
+    nodes near coords align={vertical},
+    ylabel={Wskaźnik błędu (\%)},
+    ymin=0, ymax=35,
+    bar width=12pt,
+    enlarge x limits=0.15,
+    legend pos=north west,
+    x tick label style={rotate=30, anchor=east},
+    width=0.95\textwidth,
+    height=7cm
+]
+\addplot coordinates {(WhisperX, 11.4) (GPT-4o, 12.2) (Google, 13.3) (Whisper Off., 16.9) (Azure, 18.0) (Amazon, 19.9)};
+\addplot coordinates {(WhisperX, 4.6) (GPT-4o, 4.7) (Azure, 7.6) (Amazon, 7.7) (Google, 8.8) (Whisper Off., 10.1)};
+\legend{Średni WER, Średni CER}
+\end{axis}
+\end{tikzpicture}
+\caption{Porównanie wskaźników błędu WER oraz CER dla badanych modeli ASR.}
+\label{fig:wer_cer_comparison}
+\end{figure}
