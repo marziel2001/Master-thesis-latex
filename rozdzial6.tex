@@ -102,6 +102,10 @@ Pomiar czasu przetwarzania serwerowego (\texttt{compute\_time} / \texttt{rt\_tim
     \item \textbf{Najniższa wydajność:} Najwyższy (najgorszy) wskaźnik RTF odnotowano dla lokalnego modelu \textbf{Whisper Offline}. Narzut związany z ładowaniem wag oraz sekwencyjnym dekodowaniem w architekturach o dużej liczbie parametrów powoduje, że modele lokalne wykazują wielokrotnie wyższe opóźnienia niż chmurowe interfejsy API.
 \end{itemize}
 
+Wykres~\ref{fig:rtf_comparison} przedstawia porównanie współczynnika RTF dla badanych modeli ASR.
+
+\input{wykresy/wykresRtf.tex}
+
 
 
 \subsubsection{Wpływ zakłóceń akustycznych (szum otoczenia)}
@@ -121,10 +125,18 @@ Wykres~\ref{fig:wer_cer_comparison_noise} przedstawia porównanie błędu WER dl
 
 \input{wykresy/wykresWerNoise.tex}
 
+Alternatywnie wykres~\ref{fig:wer_noise_jump_comparison} przedstawia bezpośrednio zmianę WER między tekstem prostym a tym samym tekstem z hałasem dla każdego modelu.
+
+\input{wykresy/wykresWerNoisePrzeskoki.tex}
+
 \subsubsection{Wpływ specyfiki materiału słownego na jakość transkrypcji}
 \label{subsubsec:text_type_impact}
 
 Wartości wskaźnika WER ulegały znacznej zmianie w zależności od stopnia skomplikowania leksykalnego i fonetycznego materiału testowego:
+
+Wykres~\ref{fig:wer_text_type_comparison} przedstawia porównanie błędu WER dla poszczególnych typów materiału słownego i badanych modeli ASR.
+
+\input{wykresy/wykresWerTypTekstu.tex}
 
 \begin{enumerate}
     \item \textbf{Tekst prosty i mowa swobodna (lektura / wypowiedź nieustrukturyzowana):} Charakteryzowały się najniższym poziomem błędów (średni WER $\approx 0{,}11$). Najlepsze i równorzędne wyniki uzyskały modele \textbf{Google}, \textbf{GPT-4o} oraz \textbf{WhisperX}.
@@ -189,6 +201,43 @@ Najcięższe błędy strukturalne odnotowano przy analizie skrajnych przypadków
     \item \textbf{Halucynacje i pętlenie (Whisper Offline):} Natywna implementacja modelu Whisper Large-v3, pozbawiona wstępnej filtracji ciszy za pomocą modułu VAD (\textit{ang.~Voice Activity Detection}), wykazuje tendencję do zapętlania się oraz halucynowania na długich pauzach i szumach otoczenia. W analizowanym materiale autoregresywny dekoder po napotkaniu fragmentów bez mowy powielał wygenerowane wcześniej sekwencje i tworzył nadmiarowe akapity tekstu nieobecne w oryginalnym nagraniu (duże bloki insercji).
     \item \textbf{Pominięcia tekstu i znaki obcych alfabetów (Google STT):} W próbie łamańców językowych o bardzo gęstej artykulacji w modelu Google Cloud Speech-to-Text v2 zaobserwowano sporadyczne całkowite pomijanie złożonych sekwencji wyrazowych (\textit{ang.~deletion errors}). Ponadto w skrajnych przypadkach model wstawiał w miejsce nierozpoznanej frazy pojedyncze znaki pochodzące z obcych alfabetów, co wskazuje na błędy w dekodowaniu tokenów przy braku pewności klasyfikatora.
 \end{itemize}
-% dotąd sprawdzone
 
 \subsection{Wnioski z badań}
+\label{subsec:conclusions}
+
+Przeprowadzone studium porównawcze, obejmujące około $300$ transkrypcji uzyskanych od 10 probantów dla 5 środowisk rozpoznawania mowy, pozwoliło na sformułowanie ugruntowanych wniosków naukowych i aplikacyjnych dotyczących przetwarzania języka polskiego.
+
+\subsubsection{Weryfikacja hipotezy badawczej}
+\label{subsubsec:hypothesis_verification}
+
+Postawiona w pracy hipoteza badawcza zakładała, że modele oparte na uczeniu głębokim (w szczególności rodzina modeli OpenAI Whisper) zapewniają wyższą dokładność transkrypcji (niższy współczynnik błędu WER i CER) niż komercyjne interfejsy API chmurowego, jednak charakteryzują się większym opóźnieniem i czasem przetwarzania (wyższy wskaźnik RTF).
+
+Na podstawie zgromadzonego materiału empirycznego hipotezę tę należy uznać za \textbf{częściowo potwierdzoną}:
+
+\begin{itemize}
+    \item \textbf{W zakresie dokładności (WER i CER):} Hipoteza została potwierdzona dla zoptymalizowanego wariantu \textbf{WhisperX}, który osiągnął najniższy średni wskaźnik WER ($\approx 11{,}4\%$) oraz CER ($\approx 4{,}6\%$) w całym badaniu, wyprzedzając wiodące usługi chmurowe. Jednak w przypadku natywnego modelu \textbf{Whisper Offline} (large-v3) hipoteza upadła – brak wstępnej filtracji mowy (VAD) spowodował występowanie halucynacji i pętlenia na ciszy przy części nagrań. Przełożyło się to na obniżenie dokładności w obu wskaźnikach: średni WER wynosił $\approx 16{,}9\%$ (w hałasie $\approx 20{,}0\%$), natomiast średni CER wynosił $\approx 10{,}1\%$ (w hałasie $\approx 11{,}0\%$), ustępując niektórym rozwiązaniom chmurowym.
+    \item \textbf{W zakresie opóźnień (RTF):} Hipoteza została w pełni potwierdzona. Komercyjne interfejsy API (\textbf{OpenAI GPT-4o Transcribe} z RTF $= 0{,}128$ oraz \textbf{Google STT} z RTF $= 0{,}211$) wykazały wielokrotnie wyższą wydajność czasową niż lokalne modele z rodziny Whisper (\textbf{WhisperX} z RTF $= 1{,}622$ oraz \textbf{Whisper Offline} z RTF $= 1{,}633$).
+\end{itemize}
+
+\subsubsection{Kluczowe wnioski jakościowe i wydajnościowe}
+\label{subsubsec:key_findings}
+
+Z przeprowadzonych pomiarów i analiz wynikają cztery fundamentalne prawidłowości:
+
+\begin{enumerate}
+    \item \textbf{Brak uniwersalnego lidera (kompromis jakość--szybkość):} W inżynierii systemów rozpoznawania mowy nie istnieje jeden uniwersalny silnik ASR. Wybór narzędzia jest zawsze kompromisem pomiędzy dokładnością odwzorowania treści a dostępnym budżetem opóźnień i mocą obliczeniową.
+    \item \textbf{Wpływ hałasu na jakość transkrypcji:} Szum tła oraz odległość od mikrofonu stanowią największą barierę dla systemów ASR. Wywołały one średni wzrost wskaźnika WER o około $136\%$ (a w próbie kontrolowanej sięgały wzrostu od $20\%$ do $501\%$). Najwyższą odporność na zakłócenia wykazały modele \textbf{WhisperX} oraz \textbf{GPT-4o Transcribe}, podczas gdy \textbf{Microsoft Azure Speech} zanotował najgorszy wynik -- WER $\approx 25{,}0\%$.
+    \item \textbf{Wrażliwość na specyfikę tekstu, zjawiska ITN i słownictwo dziedzinowe:} Usługi komercyjne (\textbf{Microsoft Azure} i \textbf{Amazon Transcribe}) wykazały dużą podatność na błędy przy nietypowej specyfice materiału audio. Poniosły porażkę przy transkrypcji harmonogramów zawierających godziny z powodu braku jednolitej standaryzacji tekstu (tzw. \textit{Inverse Text Normalization}) – zapis słowny \textit{„dziewiąta 50”} zamiast cyfrowego \textit{„9:50”} sztucznie zawyżał wskaźnik błędów. Ponadto silniki te wyraźnie ustępowały konkurencji w rozpoznawaniu rzadkich nazw zwierząt i pojęć dziedzinowych (np. deformując nazwę gatunkową \textit{„mangaby”} czy frazy opisowe z wybiegów ZOO). Z kolei model \textbf{WhisperX} okazał się bezkonkurencyjny zarówno w odczytywaniu słownictwa specjalistycznego, jak i w rozpoznawaniu trudnych łamańców językowych o gęstej artykulacji.
+    \item \textbf{Decydująca rola modułu VAD i wyrównania fonetycznego:} Zestawienie natywnego Whispera z wariantem WhisperX jednoznacznie dowodzi, że dołączenie wstępnej segmentacji mowy (VAD) oraz dopasowania na poziomie fonemów (\textit{phoneme-level forced alignment}) jest krytyczne dla eliminacji halucynacji oraz zapewnienia stabilności modeli autoregresywnych.
+\end{enumerate}
+
+\subsubsection{Rekomendacje wdrożeniowe dla aplikacji webowych}
+\label{subsubsec:implementation_recommendations}
+
+W oparciu o uzyskane wyniki sformułowano bezpośrednie rekomendacje architektoniczne dla programistów tworzących webowe systemy przetwarzania mowy na tekst:
+
+\begin{itemize}
+    \item \textbf{Rekomendacja dla interaktywnych aplikacji webowych o niskim opóźnieniu (Low-Latency):} Dla systemów wymagających szybkiej reakcji na interakcję użytkownika zaleca się stosowanie \textbf{OpenAI GPT-4o Transcribe} lub \textbf{Google Cloud Speech-to-Text v2}. Wykazały one wielokrotnie niższy współczynnik RTF ($\text{RTF} < 0{,}25$) od pozostałych modeli, co gwarantuje błyskawiczny zwrot gotowej transkrypcji po przesłaniu pliku audio przez interfejs API.
+    \item \textbf{Rekomendacja dla wysokiej dokładności i przetwarzania wsadowego (High-Accuracy / Batch):} Do zastosowań, w których kluczowa jest precyzja transkrypcji (rozpoznawanie trudnego słownictwa dziedzinowego, rzadkich nazw własnych, łamańców językowych czy mowy w hałasie) lub wymagana jest ochrona prywatności i praca bez dostępu do sieci zewnętrznej, jednoznacznym liderem pozostaje \textbf{WhisperX}.
+    \item \textbf{Przeciwwskazania wdrożeniowe:} Nie zaleca się stosowania natywnej implementacji \textbf{Whisper Offline} bez integracji z modułem VAD na długich nagraniach ze względu na ryzyko halucynacji i pętlenia tekstu. Do transkrypcji treści obfitych w dane cyfrowe, godziny oraz rzadkie pojęcia dziedzinowe odradza się stosowanie silników Amazon Transcribe i Azure Speech bez autorskich warstw post-normalizacji tekstu.
+\end{itemize}
