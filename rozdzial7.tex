@@ -1,6 +1,225 @@
 \section{Ocena przydatności technologii STT w aplikacjach webowych}
+\label{ch:stt_web_assessment}
+
+Wyniki badań empirycznych przedstawione w poprzednim rozdziale jednoznacznie wykazały, że żaden ze współczesnych silników automatycznego rozpoznawania mowy (ASR) nie stanowi rozwiązania uniwersalnego. Wybór optymalnego modelu w praktyce inżynierskiej jest ściśle uwarunkowany specyfiką docelowego systemu, akceptowalnym czasem reakcji, wymaganą dokładnością transkrypcji oraz ograniczeniami budżetowymi i prawnymi.
+
+Celem niniejszego rozdziału jest przeprowadzenie wielokryterialnej oceny przydatności analizowanych technologii Speech-to-Text (STT) w kontekście ich integracji z nowoczesnymi aplikacjami webowymi. Rozważania wykraczają poza surowe metryki dokładnościowe (WER, CER) oraz wydajnościowe (RTF), koncentrując się na kluczowych aspektach architektonicznych, ekonomicznych i wdrożeniowych.
+
+Struktura rozdziału została uporządkowana w następujący sposób:
+\begin{itemize}
+    \item \textbf{Podrozdział~\ref{subsec:practical_applications}} omawia kluczowe obszary zastosowań technologii STT, ze szczególnym uwzględnieniem medycyny, obsługi klienta, e-learningu, dostępności cyfrowej oraz e-administracji.
+    \item \textbf{Podrozdział~\ref{subsec:cost_scalability}} przedstawia analizę efektywności kosztowej i skalowalności, konfrontując model usług chmurowych (\textit{Pay-As-You-Go}) z utrzymaniem własnej infrastruktury GPU (\textit{Self-Hosted}).
+    \item \textbf{Podrozdział~\ref{subsec:security_privacy}} analizuje zagadnienia ochrony danych osobowych i biometrycznych w świetle wymogów RODO/GDPR oraz przetwarzania w środowiskach zamkniętych.
+    \item \textbf{Podrozdział~\ref{subsec:implementation_recommendations}} formułuje praktyczne wytyczne architektoniczne dla programistów tworzących aplikacje webowe (w oparciu o stos FastAPI i React).
+    \item \textbf{Podrozdział~\ref{subsec:limitations_future}} podsumowuje identyfikowane ograniczenia technologiczne oraz nakreśla perspektywy rozwoju systemów ASR.
+\end{itemize}
+
 \subsection{Zastosowania praktyczne}
+\label{subsec:practical_applications}
+
+Współczesny rozwój głębokich architektur neuronowych oraz upowszechnienie wydajnych interfejsów API spowodowały, że technologie automatycznego rozpoznawania mowy (STT) przestały być domeną wyłącznie wąsko wyspecjalizowanych systemów desktopowych, stając się kluczowym elementem nowoczesnych aplikacji webowych i mobilnych. Analiza literatury przedmiotu oraz wyników badań empirycznych pozwala na wyróżnienie pięciu głównych domen, w których integracja silników STT brings największą wartość użytkową oraz biznesową.
+\subsubsection{Służba zdrowia i cyfryzacja dokumentacji medycznej}
+
+Jednym z najważniejszych i najbardziej dynamicznie rozwijających się obszarów zastosowania technologii STT jest sektor medyczny. Tradycyjny proces ręcznego wprowadzania danych do elektronicznych kart pacjenta (EHR -- \textit{Electronic Health Records}) stanowi znaczne obciążenie biurokratyczne dla personelu medycznego. Wdrożenie automatycznych asystentów transkrypcyjnych umożliwia lekarzom bezpośrednie dyktowanie historii choroby, wyników badań diagnostycznych oraz opisów zabiegów, skracając czas spędzany przy klawiaturze.
+
+Wykorzystanie rozpoznawania mowy w dyktandzie medycznym wiąże się jednak z wyzwaniem precyzyjnego odczytu łacińskiej nomenklatury, nazw leków oraz skomplikowanych pojęć anatomicznych. Każdy błąd substytucji fonetycznej może potencjalnie rzutować na poprawność diagnozy lub zaleceń terapeutycznych.
+
+W odpowiedzi na te wyzwania wiodący dostawcy chmurowi opracowali specjalistyczne silniki ASR zintegrowane z dedykowanymi profilami medycznymi:
+\begin{itemize}
+    \item \textbf{Amazon Transcribe Medical:} Oferuje odrębne interfejsy API dostosowane do trybu dyktowania jednoosobowego (\textit{Dictation mode}) oraz bezpośrednich konwersacji lekarz--pacjent (\textit{Conversational mode}). Usługa ta wspiera rozbudowaną adaptację słownikową (\textit{Custom Vocabulary}), co pozwala na wprowadzanie rzadkich nazw leków i substancji czynnych.
+    \item \textbf{Google Cloud Speech-to-Text:} Wbudowuje dedykowane modele medyczne (\textit{Medical Dictation} oraz \textit{Medical Conversation}), wyćwiczone na obszernych korpusach wypowiedzi klinicznych, co drastycznie obniża wskaźnik błędu WER w porównaniu z uniwersalnymi modelami ogólnego przeznaczenia.
+    \item \textbf{Microsoft Azure Speech Services:} Udostępnia wyspecjalizowane profile wspierające dyktowanie medyczne w czasie rzeczywistym oraz integrację z systemami szpitalnymi, umożliwiając stosowanie spersonalizowanych modeli akustycznych i językowych (\textit{Custom Speech}).
+\end{itemize}
+
+W aplikacjach webowych dedykowanych dla ochrony zdrowia kluczowym wzorcem architektonicznym staje się zatem wykorzystanie wymienionych trybów medycznych w połączeniu z warstwą post-normalizacji tekstu, co gwarantuje zarówno wysoką precyzję rozpoznawania słownictwa dziedzinowego, jak i spójny zapis dawek, cyfr oraz godzin konsultacji.
+
+
+\subsubsection{Dostępność cyfrowa i technologie wspomagające (Accessibility)}
+
+Technologie Speech-to-Text odgrywają fundamentalną rolę w przełamywaniu barier cyfrowych dla osób z niepełnosprawnościami wzroku, słuchu oraz motoryki. W kontekście osób niesłyszących i słabosłyszących aplikacje webowe wykorzystują interfejsy STT do natychmiastowego generowania napisów na żywo (\textit{live captioning}) podczas wideokonferencji, wykładów czy transmisji multimedialnych.
+
+% dotąd sprawdzone cytowania
+
+Z kolei w przypadku osób niewidomych i niedowidzących interfejsy głosowe (VUI) stanowią alternatywę dla tradycyjnych urządzeń wskazujących. Chlewicki i in. \cite[s.~314--318]{chlewicki2024potencjal} w swoich badaniach nad aplikacjami mobilnymi wspieranymi przez chmurowe usługi ASR (Azure Speech, Google STT) udowodnili, że sterowanie głosem pozwala na autonomiczną obsługę skomplikowanych funkcji systemowych i informacyjnych. Podobne wnioski formułują Khan i Khusro \cite[s.~265--298]{khan2021insight}, wskazując, że integracja Web Speech API lub lekkich interfejsów chmurowych z aplikacjami klienckimi drastycznie podnosi niezależność osób z dysfunkcjami narządu wzroku.
+
+\subsubsection{Biznes, obsługa klienta i analityka konwersacyjna}
+
+W sektorze komercyjnym webowe systemy STT stanowią fundament nowoczesnych centrów obsługi klienta (Call Center) oraz platform komunikacji biznesowej. Główne zastosowania obejmują:
+\begin{itemize}
+    \item \textbf{Automatyczne notatki ze spotkań:} Integracja botów transkrypcyjnych z platformami wideokonferencyjnymi pozwala na generowanie przeszukiwalnych stenogramów oraz automatycznych podsumowań przebiegu e-spotkań.
+    \item \textbf{Analityka konwersacyjna i kontrola jakości:} Przekształcenie strumienia audio rozmowy konsultanta z klientem na tekst umożliwia automatyczną analizę sentymentu, weryfikację zgodności z procedurami oraz detekcję słów kluczowych i incydentów bezpieczeństwa.
+\end{itemize}
+
+Pęzik i in. \cite[s.~1--4]{pezik2023spokesbiz}, analizując właściwości polskiego korpusu mowy potocznej SpokesBiz, zwracają uwagę, że mowa biznesowa i potoczna charakteryzuje się dużą dynamiką, obecnością wtrąceń oraz nakładaniem się głosów rozmówców. W tego typu wdrożeniach kluczowa staje się funkcja diarizacji (\textit{speaker diarization}) oraz separacji kanałów stereo, oferowana przez komercyjne usługi chmurowe (Azure, AWS, Google) oraz rozwiązania open-source ze wstępną segmentacją VAD \cite{bain2023whisperx}.
+
+\subsubsection{Edukacja, e-Learning i przeszukiwalność multimediów}
+
+Wraz z rozwojem platform edukacyjnych i kursów online (MOOC) pojawiło się zapotrzebowanie na automatyczną indeksację materiałów wideo i audio. Zastosowanie transkrypcji STT umożliwia:
+\begin{enumerate}
+    \item Generowanie wielojęzycznych napisów dla nagrań wykładów.
+    \item Wdrożenie wyszukiwarek głębokich (\textit{deep search}), pozwalających użytkownikowi na natychmiastowe przeskoczenie do dokładnego momentu w nagraniu wideo, w którym padło określone słowo lub pojęcie definicyjne.
+    \item Łatwą konwersję materiałów audio na notatki tekstowe wspierające proces uczenia się.
+\end{enumerate}
+
+\subsubsection{E-administracja, sektor prawniczy i inteligentni asystenci brzegowi}
+
+W cyfryzacji procedur sądowych i administracyjnych systemy STT wykorzystywane są do szybkiego protokółowania rozpraw oraz przesłuchań. Wymaga to zachowania bezwzględnej spójności w formacie dat, godzin i cyfr (zjawisko ITN) oraz ochrony danych wrażliwych.
+
+Z kolei w aplikacjach konsumenckich i asystentach głosowych kluczowe jest stosowanie modułów detekcji słów kluczowych (\textit{Keyword Spotting -- KWS}) oraz wykrywania końca wypowiedzi (\textit{End-of-Speech Detection}). Jak wykazano w pracach Mikołaja Pudo \cite[s.~14--18]{pudo2024optimizing} oraz recenzji prof. Ślota \cite[s.~1--4]{slot2024recenzja}, sprawne zarządzanie momentem zamknięcia strumienia audio chroni aplikację webową przed niepotrzebnym zużyciem pamięci RAM i mocy GPU, gwarantując płynność i naturalność interakcji z użytkownikiem.
+
 \subsection{Skalowalność i efektywność kosztowa}
+\label{subsec:cost_scalability}
+
+Projektowanie architektury webowych systemów Speech-to-Text wymaga wyważenia elastyczności skalowania oraz struktury wydatków. W zależności od przyjętego paradygmatu – komercyjnych interfejsów API w chmurze lub autorskiej infrastruktury z akceleracją GPU – model ekonomiczny opiera się na odmiennych mechanizmach kosztowych i operacyjnych.
+
+\subsubsection{Model usług chmurowych (API SaaS / Pay-As-You-Go)}
+
+Współczesne usługi komercyjne (Google Cloud STT, Microsoft Azure Speech, Amazon Transcribe, OpenAI API) rozliczają się w modelu opłat za rzeczywiste zużycie (\textit{Pay-As-You-Go}). 
+
+\begin{itemize}
+    \item \textbf{Struktura wydatków:} Opłaty mają charakter czysto operacyjny (OPEX). Brak opłat wstępnych i konieczności inwestowania w sprzęt redukuje próg wejścia do zera, co jest szczególnie korzystne na etapie prototypowania i wczesnego rozwoju aplikacji.
+    \item \textbf{Wektor skalowalności:} Koszt przetwarzania skaluje się w sposób czysto liniowy wraz z wolumenem przetworzonego materiału audio. Zarządzanie alokacją zasobów obliczeniowych, dostępnością serwerów oraz utrzymaniem infrastruktury leży całkowicie po stronie dostawcy chmury.
+    \item \textbf{Ograniczenia:} Przy przetwarzaniu wielkoskalowym (np. ciągła transkrypcja tysięcy godzin nagrań miesięcznie) liniowy wzrost kosztów powoduje, że skumulowane wydatki operacyjne szybko przewyższają nakłady na zakup własnego sprzętu.
+\end{itemize}
+
+\subsubsection{Model własnej infrastruktury (Self-Hosted GPU)}
+
+Wdrożenie otwartego silnika transkrypcyjnego (np. wariantu \textbf{WhisperX} zintegrowanego z modułem VAD) na dedykowanej instancji serwerowej z akceleracją graficzną zmienia charakterystykę ekonomiczną systemu:
+
+\begin{itemize}
+    \item \textbf{Hybrydowa struktura kosztów:} Wykorzystanie własnego serwera łączy w sobie nakłady inwestycyjne (CAPEX – zakup lub leasing sprzętu serwerowego i akceleratorów GPU z odpowiednią pojemnością VRAM) oraz stałe wydatki operacyjne (OPEX – zasilanie elektryczne, chłodzenie, PUE (ang. \textit{Power Usage Effectiveness}) centrum danych oraz utrzymanie systemowe).
+    \item \textbf{Charakterystyka skalowania (funkcja schodkowa):} Koszty infrastruktury własnej nie rosną w sposób płynny, lecz skokowy – dodanie nowego węzła obliczeniowego wymaga poniesienia stałego kosztu zakupu lub wynajmu kolejnego akceleratora.
+    \item \textbf{Współczynnik utylizacji zasobów:} Efektywny koszt pojedynczej minuty transkrypcji jest ściśle zależny od stopnia obciążenia serwera ($U_{\text{GPU}} \to 100\%$). Zastosowanie wstępnej segmentacji mowy oraz przetwarzania wsadowego (\textit{batched inference}) pozwala na maksymalizację przepustowości GPU, dzięki czemu przy stałym obciążeniu koszt krańcowy pojedynczej transkrypcji drastycznie maleje.
+\end{itemize}
+
+\subsubsection{Czynniki wyznaczające próg opłacalności (Break-Even Point)}
+
+Decyzja architektoniczna o wyborze między komercyjnym API a własną infrastrukturą zależy od trzech głównych zmiennych rynkowych i operacyjnych:
+\begin{enumerate}
+    \item \textbf{Przewidywalność i wolumen ruchu:} Dla ruchu nieregularnego, ze zmiennymi pikami obciążenia lub przy niedużym wolumenie, optymalny pozostaje model chmurowy. Przy stałym, przewidywalnym obciążeniu całodobowym przewagę uzyskuje infrastruktura własna.
+    \item \textbf{Dynamika rynku sprzętowego i energii:} Dostępność oraz wahania cen akceleratorów GPU i pamięci VRAM, a także zmienność stawek energii elektrycznej bezpośrednio wpływają na czas zwrotu inwestycji w infrastrukturę lokalną.
+    \item \textbf{Wymagania dotyczące opóźnień:} Przetwarzanie wsadowe (batching) na własnym GPU pozwala na drastyczną redukcję kosztu jednostkowego, podczas gdy wymóg natychmiastowej odpowiedzi w czasie rzeczywistym wymusza stałą rezerwację mocy obliczeniowej, co podnosi koszty wdrożenia własnego.
+\end{enumerate}
+
 \subsection{Bezpieczeństwo i prywatność danych audio}
+\label{subsec:security_privacy}
+
+Zapewnienie bezpieczeństwa oraz ochrony prywatności przetwarzanych nagrań stanowi jedno z najbardziej krytycznych wyzwań przy wdrażaniu systemów Speech-to-Text w aplikacjach webowych. W przeciwieństwie do czystego tekstu, sygnał mowy niesie ze sobą nie tylko treść wypowiedzi, ale również unikalne cechy biometryczne mówcy (np. barwę głosu, stan emocjonalny, wiek czy płeć) oraz bardzo często dane osobowe i wrażliwe (PII -- ang. \textit{Personally Identifiable Information}, takie jak numery PESEL, dane medyczne czy numery kart płatniczych).
+
+W świetle przepisów Unii Europejskiej (RODO / GDPR) głos traktowany jest jako cecha biometryczna, co narzuca na administratorów systemów webowych rygorystyczne obowiązki w zakresie ochrony i ograniczenia przetwarzania takich danych.
+
+\subsubsection{Specyfika i gwarancje komercyjnych usług chmurowych (SaaS API)}
+
+Większość komercyjnych dostawców chmurowych (Google Cloud, Microsoft Azure, Amazon Web Services oraz OpenAI API) oferuje rozbudowane mechanizmy bezpieczeństwa na poziomie infrastruktury i zgodności z normami międzynarodowymi (ISO/IEC 27001, SOC 2/3, HIPAA czy DPA zgodne z RODO). Analiza dokumentacji technicznej udostępnianej przez dostawców pozwala na wyodrębnienie trzech głównych filarów ochrony:
+
+\begin{enumerate}
+    \item \textbf{Szyfrowanie i transmisja danych:} Połączenia sieciowe zabezpieczane są kryptograficznymi protokołami szyfrującymi TLS~1.2+ (dane w transmisji), natomiast nagrania przechowywane w magazynach chmurowych (np.~Amazon S3 czy Google Cloud Storage) szyfrowane są w spoczynku z wykorzystaniem kluczy dostawcy lub kluczy zarządzanych bezpośrednio przez klienta (KMS).
+    \item \textbf{Polityki retencji i wykorzystania danych (Data Retention \& Training):} W oficjalnych regulaminach usług biznesowych (Enterprise API) dostawcy deklarują, że strumienie audio oraz generowane transkrypcje przesyłane przez płatne interfejsy API nie są wykorzystywane do trenowania ogólnodostępnych modeli AI.
+    \item \textbf{Automatyczna anonimizacja (PII Redaction):} Dostawcy tacy jak Amazon Transcribe czy Azure Speech udostępniają moduły filtrowania i anonimizacji w locie (\textit{Automatic Content Redaction}), które automatycznie wykrywają i wykreślają z transkrypcji wrażliwe identyfikatory (np.~daty urodzenia, numery kart czy numery ubezpieczenia).
+\end{enumerate}
+
+\subsubsection{Ocena krytyczna gwarancji chmurowych: Zaufanie umowne vs rzeczywistość}
+
+Choć deklarowane przez gigantów technologicznych certyfikaty i gwarancje wyglądają przekonująco na papierze, w praktyce inżynierskiej podlegają istotnym zastrzeżeniom:
+
+\begin{itemize}
+    \item \textbf{Model ekonomiczny zachęcający do udostępniania danych (Data Logging):} Przykładem jest struktura cennikowa usługi Google Cloud Speech-to-Text v1, w której dostawca jawnie różnicuje cenę usługi: wybór opcji z pozwoleniem na rejestrowanie i przetwarzanie danych w celu poprawy modeli (\textit{with data logging}) oferuje znacznie niższą stawkę za minutę transkrypcji niż wariant z pełną blokadą logowania (\textit{without data logging}). Tworzy to ekonomiczną pokusę rezygnacji z ochrony prywatności na rzecz niższych kosztów operacyjnych.
+    \item \textbf{Niejasności prawne i jurysdykcyjne (CLOUD Act):} Przesyłanie danych biometrycznych do serwerów amerykańskich dostawców chmurowych stwarza ryzyko prawne związane z ustawodawstwem USA (np.~U.S. CLOUD Act), które pod pewnymi warunkami umożliwia służbom amerykańskim dostęp do danych przechowywanych w chmurze, co bywa sprzeczne z restrykcyjnymi wytycznymi RODO dotyczącymi transferu danych poza Europejski Obszar Gospodarczy.
+\end{itemize}
+
+\subsubsection{Bezwzględna ochrona w modelu przetwarzania lokalnego (Air-Gapped / Self-Hosted)}
+
+Jedynym rozwiązaniem zapewniającym bezwzględną gwarancję prywatności danych audio (architektura \textit{Zero Trust}) jest całkowita eliminacja transferu plików poza wewnętrzną sieć organizacji.
+
+Wdrożenie otwartego silnika (np. \textbf{Whisper} lub \textbf{WhisperX}) w środowisku lokalnym, na dedykowanym serwerze GPU lub w odłączonych kontenerach (\textit{Disconnected Containers}, oferowanych m.in. w Microsoft Azure), gwarantuje:
+\begin{itemize}
+    \item \textbf{100\% autonomii i izolacji (\textit{Air-Gapped}):} Żadna próbka dźwiękowa ani transkrypcja nie opuszcza lokalnej infrastruktury.
+    \item \textbf{Brak ryzyka wycieku danych biometrycznych:} Całkowite wyeliminowanie podmiotów trzecich (\textit{Third-Party Vendors}) z łańcucha przetwarzania.
+    \item \textbf{Zgodność z wyśrubowanymi normami sektorowymi:} Spełnienie wymogów wdrożeniowych w bankowości, obronności, protokołowaniu niejawnych rozpraw sądowych czy przetwarzaniu dokumentacji medycznej.
+\end{itemize}
+
+\textbf{Podsumowanie:} Gwarancje prywatności dostawców chmurowych opierają się na \textbf{zaufaniu prawno-umownym}, które w środowiskach biznesowych o wysokim ryzyku może być niewystarczające. W zastosowaniach wymagających pełnej kontroli nad danymi biometrycznymi jedynym w pełni bezpiecznym rozwiązaniem inżynieryjnym pozostaje lokalne uruchomienie zoptymalizowanych modeli otwartych.
+
+
 \subsection{Rekomendacje implementacyjne}
+\label{subsec:implementation_recommendations}
+
+W oparciu o wnioski empiryczne oraz doświadczenia zgromadzone podczas projektowania i realizacji stanowiska badawczego, sformułowano wytyczne inżynieryjne dotyczące tworzenia aplikacji zintegrowanych z silnikami transkrypcji mowy. Zalecenia te obejmują wzorce architektoniczne, wybór protokołów komunikacyjnych, zarządzanie zasobami oraz obsługę procesów asynchronicznych w systemach wykorzystujących wsadowe interfejsy STT.
+
+\subsubsection{Wzorce architektoniczne i separacja odpowiedzialności (FastAPI + React)}
+
+W przetwarzaniu mowy na tekst kluczowe jest zachowanie rygorystycznego podziału odpowiedzialności pomiędzy warstwą interfejsu użytkownika a warstwą logiki aplikacyjnej:
+
+\begin{enumerate}
+    \item \textbf{Separacja warstwy klienckiej i serwerowej:} Aplikacja kliencka (zbudowana w oparciu o bibliotekę React 19, język TypeScript oraz narzędzie Vite, uruchamiana w przeglądarce internetowej) odpowiada wyłącznie za interakcję z użytkownikiem, wybór plików audio, lokalną walidację parametrów wejściowych, obsługę stanu asynchronicznego oraz wizualizację wyników i metryk. Backend (FastAPI / Python) przejmuje pełną odpowiedzialność za integrację z zewnętrznymi i lokalnymi dostawcami STT, konwersję formatów audio, wykonanie normalizacji tekstu oraz przeliczanie metryk WER/CER.
+    \item \textbf{Wzorzec Strategii / Adaptera (\textit{Adapter Pattern}):} Umieszczenie obsługi wszystkich dostawców STT w jednym punkcie końcowym prowadzi do skomplikowanego i trudnego w utrzymaniu kodu. Zaleca się wydzielenie izolowanych adapterów transkrypcyjnych (np. w słowniku \texttt{\_TRANSCRIBERS}), które udostępniają jednolity kontrakt (\textit{interface}):
+    \begin{equation}
+        f: (\text{ścieżka\_audio}, \text{wariant\_modelu}) \to \text{tekst\_transkrypcji}
+    \end{equation}
+    Dzięki temu dodanie nowego dostawcy STT wymaga jedynie zaimplementowania pojedynczej funkcji adaptera bez konieczności modyfikacji logiki odbierania plików czy wyliczania metryk.
+    \item \textbf{Dynamiczne ładowanie bibliotek SDK:} Importowanie bibliotek klienckich dostawców (np. SDK dla Azure, Google czy AWS) powinno odbywać się wyłącznie wewnątrz konkretnego adaptera. Zapobiega to awarii całej aplikacji w przypadku braku zainstalowanego pakietu jednego z dostawców.
+\end{enumerate}
+
+\subsubsection{Model komunikacji: REST API vs WebSockets / SSE}
+
+Wybór protokołu komunikacyjnego jest ściśle uwarunkowany trybem pracy silnika (wsadowy vs strumieniowy):
+
+\begin{itemize}
+    \item \textbf{Komunikacja wsadowa (REST API + \textit{multipart/form-data}):} W przypadku przesyłania gotowych plików audio do interfejsów batchowych i oczekiwania na kompletny wynik transkrypcji, protokół HTTP/REST z nagłówkiem \texttt{multipart/form-data} pozostaje rozwiązaniem wystarczającym i najprostszym w utrzymaniu.
+    \item \textbf{Równoległe żądania klienckie (\textit{Promise.allSettled}):} Przy porównywaniu wielu silników STT w aplikacji klienckiej nie należy blokować interfejsu jednym zbiorczym zapytaniem. Zaleca się wykonywanie równoległych żądań asynchronicznych za pomocą \texttt{Promise.allSettled}. Dzięki temu awaria lub opóźnienie po stronie jednego dostawcy chmurowego nie ukrywa wyników uzyskanych z pozostałych modeli.
+    \item \textbf{Odciążenie pętli zdarzeń (\textit{run\_in\_threadpool}):} Ponieważ wykonywanie transkrypcji na lokalnych modelach GPU/CPU lub oczekiwanie na odpowiedź API chmurowego jest operacją blokującą, w frameworku FastAPI konieczne jest delegowanie wykonania adaptera do puli wątków (\texttt{run\_in\_threadpool}). Zapobiega to zamrażaniu głównej pętli zdarzeń (\textit{event loop}) serwera.
+    \item \textbf{Przejście do trybu czasu rzeczywistego (WebSockets / SSE):} Jeżeli system w przyszłości miałby obsługiwać strumieniowanie dźwięku na żywo z mikrofonu lub prezentować postęp transkrypcji w czasie rzeczywistym, zaleca się wdrożenie dwukierunkowego kanału WebSocket lub protokołu Server-Sent Events (SSE), co zapobiega przekroczeniu limitu czasu żądania HTTP (\textit{HTTP timeout}) przy długich nagraniach.
+\end{itemize}
+
+\subsubsection{Zarządzanie cyklem życia plików i pamięcią}
+
+Operacje na plikach multimedialnych wymagają ścisłej kontroli zasobów systemowych i pamięci RAM/VRAM:
+
+\begin{enumerate}
+    \item \textbf{Automatyczne czyszczenie plików tymczasowych:} Pliki audio przesłane przez użytkownika oraz skonwertowane pliki pośrednie (np. przy użyciu \texttt{ffmpeg} do formatu mono WAV 16~kHz) powinny być zarządzane przez menedżery kontekstu (\texttt{tempfile.NamedTemporaryFile}) z bezwzględnym usuwaniem plików w bloku \texttt{finally}.
+    \item \textbf{Buforowanie modeli lokalnych (\textit{Model Caching}):} Wielokrotne inicjalizowanie ciężkich modeli lokalnych (np. w pamięci VRAM dla wariantu Whisper Offline) przy każdym żądaniu generuje ogromny narzut czasowy. Zaleca się stosowanie mechanizmu buforowania w pamięci RAM (\texttt{\_local\_whisper\_clients}), przechowującego załadowaną instancję modelu pomiędzy żądaniami.
+\end{enumerate}
+
+\subsubsection{Zarządzanie stanem, metryki i skalowanie produkcyjne}
+
+W celu zapewnienia wysokiej jakości interfejsu użytkownika (UX) oraz spójności danych wyznaczono następujące wytyczne:
+
+\begin{itemize}
+    \item \textbf{Wersjonowanie referencji w aplikacji klienckiej:} Gdy użytkownik edytuje tekst referencyjny w trakcie trwania asynchronicznych żądań transkrypcji, powstaje ryzyko obliczenia wskaźników WER/CER dla nieaktualnej wersji tekstu. Zaleca się wprowadzanie monotonicznego licznika wersji (\texttt{metricsReferenceVersion}), gwarantującego spójność wyliczeń.
+    \item \textbf{Rozdzielenie transkrypcji od oceny jakościowej:} Endpoint transkrypcyjny powinien zwracać surowy tekst nawet przy braku tekstu referencyjnego. Obliczanie metryk WER/CER powinno stanowić niezależną usługę (\texttt{/api/metrics}), co umożliwia ponowną ocenę bez konieczności ponownego uruchamiania kosztownych modeli STT.
+    \item \textbf{Ewolucja do architektury produkcyjnej:} W systemach produkcyjnych o dużym natężeniu ruchu zaleca się zastąpienie lokalnego zapisu plikowego (JSON) relacyjną bazą danych oraz wdrożenie brokera zadań asynchronicznych (np. Celery z magazynem Redis) do kolejkowania długich procesów transkrypcyjnych.
+\end{itemize}
+
 \subsection{Ograniczenia i możliwe kierunki rozwoju}
+\label{subsec:limitations_future}
+
+Pomimo dynamicznego postępu w dziedzinie głębokich sieci neuronowych i architektur transformera, współczesne systemy automatycznego rozpoznawania mowy (ASR) oraz budowane na ich podstawie aplikacje klienckie charakteryzują się istotnymi ograniczeniami. Identyfikacja tych barier stanowi podstawę do nakreślenia dalszych kierunków badań i prac programistycznych.
+
+\subsubsection{Ograniczenia ewaluacyjne i metodologiczne}
+
+Podstawowym ograniczeniem metodologicznym stosowanym w ocenie systemów STT jest opieranie się na tradycyjnych metrykach odległości edycyjnej, takich jak wskaźniki błędu słów (WER) i znaków (CER):
+\begin{itemize}
+    \item \textbf{Brak oceny semantycznej:} Metryki WER i CER traktują wszystkie błędy substytucji z jednakową wagą. Z punktu widzenia użytkowego pomyłka w drobnej partykule lub przyimku jest traktowana tak samo jak zmiana kluczowego słowa (np. zaprzeczenia lub nazwy leku), co drastycznie zmienia sens wypowiedzi.
+    \item \textbf{Wpływ normalizacji tekstu:} Stosowanie agresywnej post-normalizacji (usuwanie interpunkcji, wielkich liter i znaków specjalnych) obniża wartości wskaźników WER/CER, lecz jednocześnie ukrywa błędy modeli w zakresie formatowania liczb, dat czy rozpoznawania granic zdań (ITN).
+    \item \textbf{Reprezentatywność próbki audio:} Wyniki uzyskiwane na czystych nagraniach testowych nie zawsze w pełni odzwierciedlają warunki rzeczywiste, w których występują nakładające się głosy rozmówców, zmienne akcenty regionalne oraz szumy otoczenia.
+\end{itemize}
+
+\subsubsection{Ograniczenia technologiczne modeli ASR}
+
+Zależnie od wybranego paradygmatu wdrożeniowego (model chmurowy vs. otwarty silnik lokalny) identyfikuje się następujące wyzwania inżynieryjne:
+\begin{enumerate}
+    \item \textbf{Zjawisko halucynacji w modelach sekwencja-do-sekwencji:} Wielkie modele sekwencyjne (np. z rodziny Whisper) wykazują tendencję do generowania powtarzających się fraz lub zmyślonych zdań w momentach długich pauz, ciszy lub przy wysokim poziomie zakłóceń tła.
+    \item \textbf{Złożoność diarizacji mówców:} Automatyczny podział wypowiedzi i przypisywanie ich do konkretnych osób (\textit{speaker diarization}) w trybie wielokanałowym wciąż pozostaje operacją kosztowną obliczeniowo i podatną na błędy przy nakładaniu się sygnałów audio.
+    \item \textbf{Narzut pamięciowy i narzut opóźnień:} Lokalne uruchamianie zoptymalizowanych modeli (np. \textbf{WhisperX}) wymaga znacznych zasobów pamięci VRAM oraz wydajnych akceleratorów GPU. Z kolei w przypadku bezpłatnych interfejsów przeglądarkowych (Web Speech API) twórca aplikacji nie ma żadnej kontroli nad wersją i stabilnością modelu działającego po stronie dostawcy przeglądarki.
+\end{enumerate}
+
+\subsubsection{Perspektywy i kierunki rozwoju}
+
+Dalszy rozwój webowych systemów rozpoznawania mowy będzie koncentrować się na czterech głównych obszarach:
+
+\begin{itemize}
+    \item \textbf{Integracja z wielomodalnymi dużymi modelami językowymi (Speech LLMs):} Nowoczesna ewolucja ASR zmierza w stronę bezpośredniego przetwarzania tokenów audio przez modele wielomodalne (np. architektury typu Native Speech-to-Speech), eliminujące pośrednią konwersję na tekst i pozwalające na bezpośrednią analizę intonacji oraz emocji mówcy.
+    \item \textbf{Detekcja mowy po stronie klienta (Edge ASR / WebAssembly):} Postęp w kompilacji modeli neuronowych do formatów ONNX Web oraz WebAssembly (WASM) umożliwi w najbliższych latach uruchamianie lekkich modeli STT bezpośrednio w przeglądarce internetowej klienta, gwarantując pełną prywatność danych bez konieczności angażowania własnych GPU czy zewnętrznych usług chmurowych.
+    \item \textbf{Semantyczne metryki jakości transkrypcji:} Zastąpienie lub uzupełnienie wskaźników WER/CER metrykami opartymi na podwójnym zanurzaniu pojęciowym (np. \textit{BERTScore} lub ocena semantyczna z wykorzystaniem LLM), które oceniają stopień zachowania intencji i sensu wypowiedzi.
+    \item \textbf{Hybrydowy routing transkrypcyjny:} Wdrożenie po stronie backendu inteligentnych brokerów zapytań, które na podstawie wstępnej analizy długości nagrania, poziomu szumu oraz wymagań dotyczących prywatności dynamicznie kierują strumień audio do najtańszego lub najbardziej precyzyjnego w danym momencie dostawcy STT.
+\end{itemize}
