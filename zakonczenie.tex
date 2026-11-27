@@ -1,8 +1,44 @@
-\section*{Zakończenie}
+\section*{Zakończenie}\section*{Zakończenie}
 \addcontentsline{toc}{section}{Zakończenie}
+\label{sec:zakonczenie}
+% dotad sprawdzono
+
+Niniejsza praca magisterska była poświęcona wielokryterialnej analizie i ocenie przydatności współczesnych technologii automatycznego rozpoznawania mowy (\textit{Speech-to-Text}, STT) w kontekście wsadowego przetwarzania nagrań audio dla języka polskiego. Realizacja celu głównego wymagała połączenia studiów literaturowych z obszaru cyfrowego przetwarzania sygnałów i głębokiego uczenia maszynowego, prac programistycznych nad autorskim stanowiskiem badawczym oraz przeprowadzenia cyklu pomiarów empirycznych na zróżnicowanym materiale audio.
+
 \subsection*{Podsumowanie pracy}
-\addcontentsline{toc}{subsection}{Podsumowanie pracy}
+
+W ramach przeprowadzonego wywodu naukowego i inżynieryjnego zrealizowano wszystkie założone cele szczegółowe:
+\begin{enumerate}
+    \item \textbf{Syntetyczna podstawa teoretyczna:} Przedstawiono ewolucję paradygmatów ASR -- od klasycznych Ukrytych Modeli Markowa (HMM) i hybryd HMM-DNN, przez funkcję celu CTC, po zintegrowane architektury sekwencja-do-sekwencji (\textit{Transformer}, \textit{Conformer}) oraz uczenie samo-nadzorowane (\textit{wav2vec 2.0}) i słabo nadzorowane na wielką skalę (\textit{OpenAI Whisper}).
+    \item \textbf{Przegląd rozwiązań rynkowych:} Przeprowadzono szczegółową klasyfikację i analizę porównawczą komercyjnych usług chmurowych (Google Cloud STT v2, Microsoft Azure Speech Service, Amazon Transcribe, OpenAI API), otwartych modeli głębokich (Whisper, WhisperX) oraz natywnych interfejsów przeglądarkowych (Web Speech API).
+    \item \textbf{Autorskie stanowisko badawcze:} Zaprojektowano i zaimplementowano aplikację webową w architekturze kliencko-serwerowej (FastAPI + React 19 + TypeScript + Vite), zoptymalizowaną pod kątem wsadowego przetwarzania nagrań audio, asynchronicznej orkiestracji wywołań interfejsów API, trwałej archiwizacji wyników w plikach JSON oraz wizualizacji alokacji błędów (diff-HTML).
+    \item \textbf{Ewaluacja empiryczna i weryfikacja hipotezy:} Przeprowadzono badanie na zbiorze obejmującym około 300 transkrypcji zrealizowanych przez grupę 10 probantów. Sformułowaną w pracy hipotezę badawczą uznano za \textbf{częściowo potwierdzoną}:
+    \begin{itemize}
+        \item W wymiarze dokładności transkrypcji (WER/CER) hipoteza potwierdziła się dla zoptymalizowanego wariantu \textbf{WhisperX}, który osiągnął najniższy średni wskaźnik $\text{WER} \approx 11,4\%$ oraz $\text{CER} \approx 4,6\%$. Wskazano jednak, że natywny model \textit{Whisper Offline} bez wstępnej detekcji VAD cierpiał na zjawisko halucynacji i pętlenia na ciszy, ustępując wskaźnikami niektórym usługom chmurowym.
+        \item W wymiarze wydajności czasowej (RTF) hipoteza potwierdziła się w pełni -- komercyjne interfejsy API (\textit{OpenAI GPT-4o Transcribe} z $\text{RTF} = 0,128$ oraz \textit{Google STT} z $\text{RTF} = 0,211$) wykazały wielokrotnie wyższą wydajność czasową niż lokalne modele z rodziny Whisper ($\text{RTF} \approx 1,62$).
+    \end{itemize}
+\end{enumerate}
+
 \subsection*{Najważniejsze osiągnięcia}
-\addcontentsline{toc}{subsection}{Najważniejsze osiągnięcia}
+
+Do kluczowych osiągnięć naukowych i practicalnych niniejszej pracy należą:
+\begin{itemize}
+    \item \textbf{Stworzenie powtarzalnego środowiska ewaluacyjnego:} Opracowanie bezstanowej, asynchronicznej aplikacji badawczej z odizolowanymi adapterami STT, pozwalającej na obiektywne porównywanie silników ASR bez ryzyka blokowania interfejsu czy utraty wyników cząstkowych.
+    \item \textbf{Wykazanie kluczowej roli modułów VAD i forced alignment:} Dowiedzenie na materiale empirycznym, że wstępna segmentacja mowy oraz phoneme-level forced alignment (zaimplementowane w WhisperX) są warunkiem koniecznym do wyeliminowania halucynacji oraz zapętlania tekstu w modelach autoregresywnych.
+    \item \textbf{Identyfikacja ograniczeń funkcji ITN w usługach chmurowych:} Wykazanie, że nieujednolicony format zapisu danych liczbowych i godzin (zjawisko \textit{Inverse Text Normalization}) w usługach Azure i Amazon generuje sztuczne skoki wskaźnika WER, co uzasadnia konieczność stosowania warstw post-normalizacji tekstu w aplikacjach produkcyjnych.
+    \item \textbf{Formułowanie rekomendacji architektonicznych:} Opracowanie wytycznych wdrożeniowych dzielących zastosowania na systemy interaktywne o niskiej latencji (rekomendacja: GPT-4o / Google STT v2) oraz aplikacje wsadowe o najwyższej dokładności i wymogach prywatności (rekomendacja: WhisperX / Self-Hosted GPU).
+\end{itemize}
+
 \subsection*{Kierunki dalszych badań}
-\addcontentsline{toc}{subsection}{Kierunki dalszych badań}
+
+Obszar automatycznego rozpoznawania mowy rozwija się niezwykle dynamicznie. Wśród najbardziej obiecujących kierunków dalszych prac naukowych i programistycznych wyróżnić można:
+\begin{enumerate}
+    \item \textbf{Integracja z wielomodalnymi modelami językowymi (Speech LLMs):} Przejście od klasycznego kaskadowego przetwarzania ASR$\to$NLU do bezpośredniego dekodowania tokenów audio przez modele wielomodalne (\textit{Native Speech-to-Speech}), co pozwala na zachowanie informacji o intonacji, emocjach oraz tożsamości mówcy.
+    \item \textbf{Inference po stronie klienta (Edge ASR / WebAssembly):} Kompilacja lekkich modeli neuronowych do formatów ONNX Web / WASM, co umożliwi wykonywanie pełnej transkrypcji bezpośrednio w przeglądarce użytkownika bez konieczności angażowania serwerowych zasobów GPU.
+    \item \textbf{Semantyczne metryki oceny jakości:} Zastąpienie lub uzupełnienie tradycyjnych wskaźników Levenshteina (WER/CER) metrykami opartymi na zanurzeniach pojęciowych (np. \textit{BERTScore} lub ocena semantyczna z użyciem LLM), mierzącymi stopień zachowania rzeczywistego sensu wypowiedzi.
+    \item \textbf{Hybrydowy routing zapytań STT:} Zaimplementowanie w warstwie backendu brokerów zapytań, które na podstawie wstępnej analizy czasu trwania, poziomu szumu oraz wymogów prywatności dynamicznie kierują strumień audio do najbardziej optymalnego silnika ASR.
+\end{enumerate}
+
+\medskip
+
+Reasumując, przeprowadzone badania empiryczne oraz zaimplementowane środowisko ewaluacyjne dowodzą, że technologia automatycznego rozpoznawania mowy w języku polskim osiągnęła poziom dojrzałości umożliwiający szerokie zastosowanie produkcyjne. Wybór optymalnego rozwiązania nie jest jednak uniwersalny i wymaga precyzyjnego balansu pomiędzy dokładnością transkrypcji, wydajnością czasową a architekturą systemu. Opracowane w niniejszej pracy wnioski oraz wytyczne stanowią praktyczny przewodnik dla inżynierów i architektów projektujących nowoczesne systemy wsadowego przetwarzania nagrań audio.

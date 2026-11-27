@@ -1,9 +1,16 @@
 
 \section{Projekt i implementacja aplikacji wsadowej do ewaluacji systemów Speech-to-Text}
-\label{sec:implementation}
-W niniejszym rozdziale przedstawiono projekt oraz szczegóły implementacyjne autorskiego stanowiska badawczego przeznaczonego do ewaluacji i porównywania dokładności oraz wydajności silników rozpoznawania mowy. Aplikacja została zrealizowana w architekturze kliencko-serwerowej z podziałem na warstwę prezentacji stworzoną w bibliotece \textbf{React} (wraz z językiem \textbf{TypeScript} i narzędziem \textbf{Vite}) oraz backendowy orkiestrator zapytań zaimplementowany we frameworku \textbf{FastAPI}.
+\label{ch:implementation}
+W niniejszym rozdziale przedstawiono projekt oraz szczegóły implementacyjne autorskiego stanowiska badawczego przeznaczonego do ewaluacji i porównywania dokładności oraz wydajności silników rozpoznawania mowy. Aplikacja została zrealizowana w architekturze kliencko-serwerowej z podziałem na warstwę prezentacji stworzoną w bibliotece React (wraz z językiem TypeScript i narzędziem Vite) oraz backendowy orkiestrator zapytań zaimplementowany we frameworku FastAPI.
 
-Głównym celem inżynieryjnym przy budowie aplikacji było stworzenie narzędzia pragmatycznego, zoptymalizowanego pod kątem wsadowego (\textit{ang.~Batch Processing}) przetwarzania nagrań audio oraz trwałej archiwizacji wyników. Zamiast wdrażania rozbudowanej infrastruktury produkcyjnej (rozproszonych kolejek zadań czy relacyjnych baz danych), w systemie postawiono na bezstanową komunikację REST/HTTP, asynchroniczną orkiestrację wywołań interfejsów API oraz przechowywanie wyników eksperymentów w ustrukturyzowanych plikach w formacie JSON.
+Głównym celem inżynieryjnym przy budowie aplikacji było stworzenie narzędzia pragmatycznego, zoptymalizowanego pod kątem wsadowego (\textit{Batch Processing}) przetwarzania nagrań audio oraz trwałej archiwizacji wyników. Zamiast wdrażania rozbudowanej infrastruktury produkcyjnej, w systemie postawiono na bezstanową komunikację REST/HTTP, asynchroniczną orkiestrację wywołań interfejsów API oraz przechowywanie wyników eksperymentów w ustrukturyzowanych plikach w formacie JSON.
+
+Struktura rozdziału została zorganizowana w sposób odzwierciedlający kolejne etapy prac inżynieryjnych:
+\begin{itemize}
+    \item \textbf{Podrozdział 3.1} precyzuje zestaw wymagań funkcjonalnych oraz niefunkcjonalnych determinujących architekturę systemu, takich jak izolacja awarii pojedynczych dostawców czy asynchroniczna obsługa interfejsu.
+    \item \textbf{Podrozdział 3.2} szczegółowo opisuje architekturę systemu i ogólny schemat przepływu danych (\textit{Data Flow}), w tym organizację warstwy backendowej (FastAPI, orkiestracja adapterów STT, pula wątków, buforowanie modeli) oraz warstwy frontendu (React, obsługa stanu \texttt{ModelRunState}, wersjonowanie referencji).
+    \item \textbf{Podrozdział 3.3} przedstawia rozwiązania programistyczne zaimplementowane w obszarze akwizycji plików dźwiękowych (komponent \texttt{FilePicker}), edycji i wersjonowania tekstu referencyjnego oraz procesów automatycznej normalizacji i tokenizacji tekstu na potrzeby wyliczania metryk WER i CER.
+\end{itemize}
 
 \subsection{Założenia funkcjonalne i niefunkcjonalne aplikacji}
 \label{subsec:requirements}

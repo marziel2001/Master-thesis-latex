@@ -17,10 +17,10 @@ Struktura rozdziału została uporządkowana w następujący sposób:
 \subsection{Zastosowania praktyczne}
 \label{subsec:practical_applications}
 
-Współczesny rozwój głębokich architektur neuronowych oraz upowszechnienie wydajnych interfejsów API spowodowały, że technologie automatycznego rozpoznawania mowy (STT) przestały być domeną wyłącznie wąsko wyspecjalizowanych systemów desktopowych, stając się kluczowym elementem nowoczesnych aplikacji webowych i mobilnych. Analiza literatury przedmiotu oraz wyników badań empirycznych pozwala na wyróżnienie pięciu głównych domen, w których integracja silników STT brings największą wartość użytkową oraz biznesową.
+Współczesny rozwój głębokich architektur neuronowych oraz upowszechnienie wydajnych interfejsów API spowodowały, że technologie automatycznego rozpoznawania mowy (STT) przestały być domeną wyłącznie wąsko wyspecjalizowanych systemów desktopowych, stając się kluczowym elementem nowoczesnych aplikacji webowych i mobilnych. Analiza literatury przedmiotu oraz wyników badań empirycznych pozwala na wyróżnienie pięciu głównych domen, w których integracja silników STT przynosi największą wartość użytkową oraz biznesową.
 \subsubsection{Służba zdrowia i cyfryzacja dokumentacji medycznej}
 
-Jednym z najważniejszych i najbardziej dynamicznie rozwijających się obszarów zastosowania technologii STT jest sektor medyczny. Tradycyjny proces ręcznego wprowadzania danych do elektronicznych kart pacjenta (EHR -- \textit{Electronic Health Records}) stanowi znaczne obciążenie biurokratyczne dla personelu medycznego. Wdrożenie automatycznych asystentów transkrypcyjnych umożliwia lekarzom bezpośrednie dyktowanie historii choroby, wyników badań diagnostycznych oraz opisów zabiegów, skracając czas spędzany przy klawiaturze.
+Jednym z najważniejszych i najbardziej dynamicznie rozwijających się obszarów zastosowania technologii STT jest sektor medyczny. Tradycyjny proces ręcznego wprowadzania danych do elektronicznych kart pacjenta stanowi znaczne obciążenie biurokratyczne dla personelu medycznego. Wdrożenie automatycznych asystentów transkrypcyjnych umożliwia lekarzom bezpośrednie dyktowanie historii choroby, wyników badań diagnostycznych oraz opisów zabiegów, skracając czas spędzany przy klawiaturze.
 
 Wykorzystanie rozpoznawania mowy w dyktandzie medycznym wiąże się jednak z wyzwaniem precyzyjnego odczytu łacińskiej nomenklatury, nazw leków oraz skomplikowanych pojęć anatomicznych. Każdy błąd substytucji fonetycznej może potencjalnie rzutować na poprawność diagnozy lub zaleceń terapeutycznych.
 
@@ -38,9 +38,8 @@ W aplikacjach webowych dedykowanych dla ochrony zdrowia kluczowym wzorcem archit
 
 Technologie Speech-to-Text odgrywają fundamentalną rolę w przełamywaniu barier cyfrowych dla osób z niepełnosprawnościami wzroku, słuchu oraz motoryki. W kontekście osób niesłyszących i słabosłyszących aplikacje webowe wykorzystują interfejsy STT do natychmiastowego generowania napisów na żywo (\textit{live captioning}) podczas wideokonferencji, wykładów czy transmisji multimedialnych.
 
-% dotąd sprawdzone cytowania
 
-Z kolei w przypadku osób niewidomych i niedowidzących interfejsy głosowe (VUI) stanowią alternatywę dla tradycyjnych urządzeń wskazujących. Chlewicki i in. \cite[s.~314--318]{chlewicki2024potencjal} w swoich badaniach nad aplikacjami mobilnymi wspieranymi przez chmurowe usługi ASR (Azure Speech, Google STT) udowodnili, że sterowanie głosem pozwala na autonomiczną obsługę skomplikowanych funkcji systemowych i informacyjnych. Podobne wnioski formułują Khan i Khusro \cite[s.~265--298]{khan2021insight}, wskazując, że integracja Web Speech API lub lekkich interfejsów chmurowych z aplikacjami klienckimi drastycznie podnosi niezależność osób z dysfunkcjami narządu wzroku.
+Z kolei w przypadku osób niewidomych i niedowidzących interfejsy głosowe (VUI) stanowią skuteczną alternatywę dla tradycyjnych urządzeń wskazujących. Chlewicki, Jarząbkowski i Cichoń \cite[s.~318]{chlewicki2024potencjal} w swoich badaniach nad aplikacjami wspieranymi przez chmurowe usługi ASR udowodnili, że sterowanie głosem pozwala na autonomiczną obsługę skomplikowanych funkcji systemowych i informacyjnych. Autorzy wskazują, że integracja interfejsów rozpoznawania mowy z aplikacjami klienckimi znacząco podnosi niezależność osób z dysfunkcjami narządu wzroku w codziennym funkcjonowaniu, eliminując bariery związane z tradycyjnym wprowadzaniem danych.
 
 \subsubsection{Biznes, obsługa klienta i analityka konwersacyjna}
 
@@ -50,11 +49,11 @@ W sektorze komercyjnym webowe systemy STT stanowią fundament nowoczesnych centr
     \item \textbf{Analityka konwersacyjna i kontrola jakości:} Przekształcenie strumienia audio rozmowy konsultanta z klientem na tekst umożliwia automatyczną analizę sentymentu, weryfikację zgodności z procedurami oraz detekcję słów kluczowych i incydentów bezpieczeństwa.
 \end{itemize}
 
-Pęzik i in. \cite[s.~1--4]{pezik2023spokesbiz}, analizując właściwości polskiego korpusu mowy potocznej SpokesBiz, zwracają uwagę, że mowa biznesowa i potoczna charakteryzuje się dużą dynamiką, obecnością wtrąceń oraz nakładaniem się głosów rozmówców. W tego typu wdrożeniach kluczowa staje się funkcja diarizacji (\textit{speaker diarization}) oraz separacji kanałów stereo, oferowana przez komercyjne usługi chmurowe (Azure, AWS, Google) oraz rozwiązania open-source ze wstępną segmentacją VAD \cite{bain2023whisperx}.
+Pęzik i in. \cite[s.~1--4]{pezik2023spokesbiz}, analizując właściwości polskiego korpusu mowy potocznej SpokesBiz, zwracają uwagę, że mowa biznesowa i potoczna charakteryzuje się dużą dynamiką, obecnością wtrąceń oraz nakładaniem się głosów rozmówców. W tego typu wdrożeniach kluczowa staje się funkcja diarizacji (\textit{speaker diarization}) oraz separacji kanałów stereo, oferowana przez komercyjne usługi chmurowe (Azure, AWS, Google) oraz rozwiązania open-source ze wstępną segmentacją VAD (WhisperX).
 
 \subsubsection{Edukacja, e-Learning i przeszukiwalność multimediów}
 
-Wraz z rozwojem platform edukacyjnych i kursów online (MOOC) pojawiło się zapotrzebowanie na automatyczną indeksację materiałów wideo i audio. Zastosowanie transkrypcji STT umożliwia:
+Wraz z rozwojem platform edukacyjnych i kursów online pojawiło się zapotrzebowanie na automatyczną indeksację materiałów wideo i audio. Zastosowanie transkrypcji STT umożliwia:
 \begin{enumerate}
     \item Generowanie wielojęzycznych napisów dla nagrań wykładów.
     \item Wdrożenie wyszukiwarek głębokich (\textit{deep search}), pozwalających użytkownikowi na natychmiastowe przeskoczenie do dokładnego momentu w nagraniu wideo, w którym padło określone słowo lub pojęcie definicyjne.
@@ -65,7 +64,7 @@ Wraz z rozwojem platform edukacyjnych i kursów online (MOOC) pojawiło się zap
 
 W cyfryzacji procedur sądowych i administracyjnych systemy STT wykorzystywane są do szybkiego protokółowania rozpraw oraz przesłuchań. Wymaga to zachowania bezwzględnej spójności w formacie dat, godzin i cyfr (zjawisko ITN) oraz ochrony danych wrażliwych.
 
-Z kolei w aplikacjach konsumenckich i asystentach głosowych kluczowe jest stosowanie modułów detekcji słów kluczowych (\textit{Keyword Spotting -- KWS}) oraz wykrywania końca wypowiedzi (\textit{End-of-Speech Detection}). Jak wykazano w pracach Mikołaja Pudo \cite[s.~14--18]{pudo2024optimizing} oraz recenzji prof. Ślota \cite[s.~1--4]{slot2024recenzja}, sprawne zarządzanie momentem zamknięcia strumienia audio chroni aplikację webową przed niepotrzebnym zużyciem pamięci RAM i mocy GPU, gwarantując płynność i naturalność interakcji z użytkownikiem.
+Z kolei w aplikacjach konsumenckich i asystentach głosowych kluczowe jest stosowanie modułów detekcji słów kluczowych (\textit{Keyword Spotting -- KWS}) oraz wykrywania końca wypowiedzi (\textit{End-of-Speech Detection}). Jak wykazano w pracach Mikołaja Pudo \cite[s.~16]{pudo2024optimizing} oraz recenzji prof. Ślota \cite{slot2024recenzja}, sprawne zarządzanie momentem zamknięcia strumienia audio chroni aplikację webową przed niepotrzebnym zużyciem pamięci RAM i mocy GPU, gwarantując płynność i naturalność interakcji z użytkownikiem.
 
 \subsection{Skalowalność i efektywność kosztowa}
 \label{subsec:cost_scalability}
@@ -82,14 +81,14 @@ Współczesne usługi komercyjne (Google Cloud STT, Microsoft Azure Speech, Amaz
     \item \textbf{Ograniczenia:} Przy przetwarzaniu wielkoskalowym (np. ciągła transkrypcja tysięcy godzin nagrań miesięcznie) liniowy wzrost kosztów powoduje, że skumulowane wydatki operacyjne szybko przewyższają nakłady na zakup własnego sprzętu.
 \end{itemize}
 
-\subsubsection{Model własnej infrastruktury (Self-Hosted GPU)}
+\subsubsection{Model własnej infrastruktury (Self-Hosted)}
 
 Wdrożenie otwartego silnika transkrypcyjnego (np. wariantu \textbf{WhisperX} zintegrowanego z modułem VAD) na dedykowanej instancji serwerowej z akceleracją graficzną zmienia charakterystykę ekonomiczną systemu:
 
 \begin{itemize}
     \item \textbf{Hybrydowa struktura kosztów:} Wykorzystanie własnego serwera łączy w sobie nakłady inwestycyjne (CAPEX – zakup lub leasing sprzętu serwerowego i akceleratorów GPU z odpowiednią pojemnością VRAM) oraz stałe wydatki operacyjne (OPEX – zasilanie elektryczne, chłodzenie, PUE (ang. \textit{Power Usage Effectiveness}) centrum danych oraz utrzymanie systemowe).
     \item \textbf{Charakterystyka skalowania (funkcja schodkowa):} Koszty infrastruktury własnej nie rosną w sposób płynny, lecz skokowy – dodanie nowego węzła obliczeniowego wymaga poniesienia stałego kosztu zakupu lub wynajmu kolejnego akceleratora.
-    \item \textbf{Współczynnik utylizacji zasobów:} Efektywny koszt pojedynczej minuty transkrypcji jest ściśle zależny od stopnia obciążenia serwera ($U_{\text{GPU}} \to 100\%$). Zastosowanie wstępnej segmentacji mowy oraz przetwarzania wsadowego (\textit{batched inference}) pozwala na maksymalizację przepustowości GPU, dzięki czemu przy stałym obciążeniu koszt krańcowy pojedynczej transkrypcji drastycznie maleje.
+    \item \textbf{Współczynnik utylizacji zasobów:} Efektywny koszt pojedynczej minuty transkrypcji jest ściśle zależny od stopnia wykorzystania (utylizacji) akceleratora graficznego ($U_{\text{GPU}}$), definiowanego jako stosunek efektywnego czasu wykonywania obliczeń oraz nasycenia pamięci VRAM do całkowitego czasu dostępności serwera. Dążenie do wysokiego poziomu utylizacji pozwala na optymalizację kosztów jednostkowych. Zastosowanie wstępnej segmentacji mowy oraz przetwarzania wsadowego (\textit{batched inference}) pozwala na równomierne nasycenie przepustowości pamięci i rdzeni GPU, dzięki czemu przy stałym obciążeniu koszt krańcowy pojedynczej transkrypcji drastically maleje.
 \end{itemize}
 
 \subsubsection{Czynniki wyznaczające próg opłacalności (Break-Even Point)}
@@ -111,6 +110,7 @@ W świetle przepisów Unii Europejskiej (RODO / GDPR) głos traktowany jest jako
 \subsubsection{Specyfika i gwarancje komercyjnych usług chmurowych (SaaS API)}
 
 Większość komercyjnych dostawców chmurowych (Google Cloud, Microsoft Azure, Amazon Web Services oraz OpenAI API) oferuje rozbudowane mechanizmy bezpieczeństwa na poziomie infrastruktury i zgodności z normami międzynarodowymi (ISO/IEC 27001, SOC 2/3, HIPAA czy DPA zgodne z RODO). Analiza dokumentacji technicznej udostępnianej przez dostawców pozwala na wyodrębnienie trzech głównych filarów ochrony:
+% dotąd sprawdzone cytowania
 
 \begin{enumerate}
     \item \textbf{Szyfrowanie i transmisja danych:} Połączenia sieciowe zabezpieczane są kryptograficznymi protokołami szyfrującymi TLS~1.2+ (dane w transmisji), natomiast nagrania przechowywane w magazynach chmurowych (np.~Amazon S3 czy Google Cloud Storage) szyfrowane są w spoczynku z wykorzystaniem kluczy dostawcy lub kluczy zarządzanych bezpośrednio przez klienta (KMS).
@@ -129,9 +129,7 @@ Choć deklarowane przez gigantów technologicznych certyfikaty i gwarancje wygl�
 
 \subsubsection{Bezwzględna ochrona w modelu przetwarzania lokalnego (Air-Gapped / Self-Hosted)}
 
-Jedynym rozwiązaniem zapewniającym bezwzględną gwarancję prywatności danych audio (architektura \textit{Zero Trust}) jest całkowita eliminacja transferu plików poza wewnętrzną sieć organizacji.
-
-Wdrożenie otwartego silnika (np. \textbf{Whisper} lub \textbf{WhisperX}) w środowisku lokalnym, na dedykowanym serwerze GPU lub w odłączonych kontenerach (\textit{Disconnected Containers}, oferowanych m.in. w Microsoft Azure), gwarantuje:
+Jedynym rozwiązaniem zapewniającym bezwzględną gwarancję prywatności danych audio (architektura \textit{Zero Trust}) jest całkowita eliminacja transferu plików poza wewnętrzną sieć organizacji. Wdrożenie otwartego silnika (np. \textbf{Whisper} lub \textbf{WhisperX}) w środowisku lokalnym, na dedykowanym serwerze GPU lub w odłączonych kontenerach (\textit{Disconnected Containers}, oferowanych m.in. w Microsoft Azure), gwarantuje:
 \begin{itemize}
     \item \textbf{100\% autonomii i izolacji (\textit{Air-Gapped}):} Żadna próbka dźwiękowa ani transkrypcja nie opuszcza lokalnej infrastruktury.
     \item \textbf{Brak ryzyka wycieku danych biometrycznych:} Całkowite wyeliminowanie podmiotów trzecich (\textit{Third-Party Vendors}) z łańcucha przetwarzania.

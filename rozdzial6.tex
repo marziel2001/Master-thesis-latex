@@ -2,8 +2,18 @@
 \section{Studium porównawcze skuteczności wybranych narzędzi STT}
 \label{sec:comparative_study}
 
-W niniejszym rozdziale przedstawiono przebieg oraz wyniki eksperymentu badawczego mającego na celu ewaluację jakościową i wydajnościową wybranych systemów rozpoznawania mowy dla języka polskiego. Testy przeprowadzono z wykorzystaniem autorskiej aplikacji badawczej opisanej w rozdziale~\ref{sec:implementation}.
+Niniejszy rozdział stanowi kluczową część empiryczną pracy, poświęconą przeprowadzeniu szczegółowego studium porównawczego wybranych silników automatycznego rozpoznawania mowy (ang. \textit{Automatic Speech Recognition}, ASR). Badania zrealizowano przy użyciu autorskiego stanowiska badawczego opisanego w Rozdziale 3, przeprowadzając ewaluację ilościową i jakościową na reprezentatywnym zbiorze nagrań w języku polskim w warunkach zróżnicowanej akustyki oraz odmiennego stopnia skomplikowania materiału słownego.
 
+Struktura rozdziału została zorganizowana w sposób umożliwiający przejście od założeń metodologicznych eksperymentu przez prezentację wyników pomiarowych aż po ich pogłębioną analizę jakościową i sformułowanie wniosków wdrożeniowych:
+\begin{itemize}
+    \item \textbf{Podrozdział 4.1} przedstawia szczegółowy projekt eksperymentu, obejmujący charakterystykę scenariusza testowego (6 nagrań audio zrealizowanych przez grupę probantów), opis warunków akustycznych (mowa czysta vs. nagrania w hałasie) oraz zasady dopasowywania tekstu wzorcowego (\textit{Ground Truth}).
+    \item \textbf{Podrozdział 4.2} definiuje metodologię pomiarową oraz przypomina kluczowe metryki jakościowe (WER, CER) i wydajnościowe (RTF) wykorzystane w analizie statystycznej.
+    \item \textbf{Podrozdział 4.3} zawiera ilościowe zestawienie wyników testów porównawczych w rozbiciu na ogólną dokładność transkrypcji, wydajność czasową i opóźnienia serwerowe, odporność modeli na hałas otoczenia oraz wpływ specyfiki leksykalnej materiału słownego.
+    \item \textbf{Podrozdział 4.4} prezentuje szczegółową analizę jakościową popełnianych błędów, klasyfikując je na zjawiska fonetyczne i substytucje, niespójności w formacie danych liczbowych i godzin (zjawisko ITN), błędy segmentacji i nazw własnych oraz skrajne uszkodzenia strumienia (halucynacje i pętlenie).
+    \item \textbf{Podrozdział 4.5} przynosi formalną weryfikację hipotezy badawczej, podsumowanie najważniejszych wniosków jakościowych i wydajnościowych oraz sformułowanie bezpośrednich rekomendacji wdrożeniowych dla deweloperów aplikacji webowych.
+\end{itemize}
+
+Wyniki oraz wnioski przedstawione w tym rozdziale stanowią bezpośrednią podstawę dla uogólnionej oceny przydatności technologii STT zaprezentowanej w Rozdziale~\ref{ch:stt_web_assessment}.
 \subsection{Projekt eksperymentu}
 \label{subsec:experiment_design}
 
